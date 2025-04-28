@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -87,8 +88,95 @@ export default {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
-  		}
+  		},
+       typography: ({ theme }: { theme: any }) => ({ // Add typography styles
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.foreground'),
+            '--tw-prose-headings': theme('colors.primary'),
+            '--tw-prose-lead': theme('colors.foreground'),
+            '--tw-prose-links': theme('colors.primary'),
+            '--tw-prose-bold': theme('colors.foreground'),
+            '--tw-prose-counters': theme('colors.muted.foreground'),
+            '--tw-prose-bullets': theme('colors.primary'),
+            '--tw-prose-hr': theme('colors.border'),
+            '--tw-prose-quotes': theme('colors.muted.foreground'),
+            '--tw-prose-quote-borders': theme('colors.primary'),
+            '--tw-prose-captions': theme('colors.muted.foreground'),
+            '--tw-prose-code': theme('colors.accent.foreground'),
+            '--tw-prose-pre-code': theme('colors.accent.foreground'),
+            '--tw-prose-pre-bg': theme('colors.muted'),
+            '--tw-prose-th-borders': theme('colors.border'),
+            '--tw-prose-td-borders': theme('colors.border'),
+             // Add more specific prose styles if needed
+            h2: {
+              borderBottom: `1px solid ${theme('colors.border')}`,
+              paddingBottom: theme('spacing.1'),
+              marginTop: theme('spacing.8'), // Increase top margin for h2
+              marginBottom: theme('spacing.4'), // Increase bottom margin for h2
+            },
+            p: {
+                 marginTop: theme('spacing.2'), // Add a small top margin to paragraphs for spacing
+                 marginBottom: theme('spacing.4'), // Ensure consistent bottom margin for paragraphs
+            },
+            ul: {
+                marginTop: theme('spacing.2'),
+                marginBottom: theme('spacing.4'),
+                paddingLeft: theme('spacing.5'), // Indent lists
+            },
+            li: {
+                 marginTop: theme('spacing.1'),
+                 marginBottom: theme('spacing.1'),
+            },
+             'li > p': { // Remove margins for paragraphs directly inside list items
+                marginTop: '0',
+                marginBottom: '0',
+            },
+          },
+        },
+        sm: { // Define smaller prose styles if needed (e.g., for card content)
+            css: {
+                 h2: {
+                     fontSize: theme('fontSize.lg'),
+                 },
+                 p: {
+                    fontSize: theme('fontSize.sm'),
+                 },
+                 ul: {
+                     paddingLeft: theme('spacing.4'),
+                 },
+                 // Add other sm overrides
+            }
+        },
+         // Dark mode prose styles
+        dark: {
+          css: {
+            '--tw-prose-body': theme('colors.foreground'),
+            '--tw-prose-headings': theme('colors.primary'),
+            '--tw-prose-lead': theme('colors.foreground'),
+            '--tw-prose-links': theme('colors.primary'),
+            '--tw-prose-bold': theme('colors.foreground'),
+            '--tw-prose-counters': theme('colors.muted.foreground'),
+            '--tw-prose-bullets': theme('colors.primary'),
+            '--tw-prose-hr': theme('colors.border'),
+            '--tw-prose-quotes': theme('colors.muted.foreground'),
+            '--tw-prose-quote-borders': theme('colors.primary'),
+            '--tw-prose-captions': theme('colors.muted.foreground'),
+            '--tw-prose-code': theme('colors.accent.foreground'),
+            '--tw-prose-pre-code': theme('colors.accent.foreground'),
+            '--tw-prose-pre-bg': theme('colors.muted'),
+            '--tw-prose-th-borders': theme('colors.border'),
+            '--tw-prose-td-borders': theme('colors.border'),
+             h2: {
+               borderBottomColor: theme('colors.border'),
+            },
+          },
+        },
+      }),
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+      require("tailwindcss-animate"),
+      require('@tailwindcss/typography') // Add typography plugin
+    ],
 } satisfies Config;

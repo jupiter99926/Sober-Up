@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -107,4 +108,31 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+   /* Basic prose styling */
+  .prose {
+      color: hsl(var(--foreground)); /* Ensure prose uses theme text color */
+      line-height: 1.6;
+  }
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+      @apply font-semibold mt-6 mb-3;
+  }
+   .prose h1 { @apply text-3xl; }
+  .prose h2 { @apply text-xl font-semibold leading-tight tracking-tight border-b pb-1; } /* Added border-b */
+  .prose h3 { @apply text-lg; }
+  .prose p { @apply mb-4; }
+  .prose strong { @apply font-semibold; }
+  .prose ul, .prose ol { @apply list-inside mb-4 ml-4 space-y-1; }
+  .prose ul { @apply list-disc; }
+  .prose ol { @apply list-decimal; }
+  .prose li { @apply mb-1;}
+  .prose li > p { @apply inline; } /* Allow paragraphs within list items */
+  .prose blockquote { @apply border-l-4 pl-4 italic text-muted-foreground my-4; }
+  .prose code { @apply px-1 py-0.5 bg-muted rounded text-sm font-mono; }
+  .prose pre { @apply bg-muted p-4 rounded overflow-x-auto my-4; }
+  .prose a { @apply text-primary underline hover:text-primary/90; }
+  .prose hr { @apply my-6 border-t; }
+}
+
+@layer utilities {
+  /* Add custom utilities here if needed */
 }

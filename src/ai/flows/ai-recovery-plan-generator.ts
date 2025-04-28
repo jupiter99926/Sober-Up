@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI-powered recovery plan generator.
@@ -32,7 +33,7 @@ export type RecoveryPlanInput = z.infer<typeof RecoveryPlanInputSchema>;
 const RecoveryPlanOutputSchema = z.object({
   recoveryPlan: z
     .string()
-    .describe('A personalized recovery plan tailored to the user based on their input. Format the plan clearly, possibly using markdown for sections like Milestones, Coping Strategies, Support Systems, and Relapse Prevention.'),
+    .describe('A personalized recovery plan tailored to the user based on their input. Format the plan clearly using Markdown. Use ## for main section headings (e.g., ## Introduction) and standard markdown for lists (* item or 1. item).'),
 });
 export type RecoveryPlanOutput = z.infer<typeof RecoveryPlanOutputSchema>;
 
@@ -65,7 +66,7 @@ const prompt = ai.definePrompt({
     schema: z.object({
       recoveryPlan: z
         .string()
-        .describe('A personalized recovery plan tailored to the user based on their input. Structure the plan with clear sections (e.g., Introduction, Goals, Coping Strategies, Support Network, Milestones, Relapse Prevention). Use empathetic and encouraging language. Provide actionable steps.'),
+        .describe('A personalized recovery plan tailored to the user based on their input. Structure the plan with clear sections (e.g., Introduction, Goals, Coping Strategies, Support Network, Milestones, Relapse Prevention). Use empathetic and encouraging language. Provide actionable steps. Format using Markdown: use "## Section Title" for headings and standard markdown lists (* item or 1. item).'),
     }),
   },
   prompt: `You are an AI assistant specializing in addiction recovery support. Create a personalized, empathetic, and actionable recovery plan based on the following user information. The plan should be structured, encouraging, and provide concrete steps. Acknowledge the courage it takes to seek help.
@@ -78,17 +79,17 @@ const prompt = ai.definePrompt({
 *   **Mental Health Context:** {{{mentalHealthHistory}}}
 
 **Instructions:**
-Generate a personalized recovery plan including the following sections:
-1.  **Introduction:** Start with an empathetic and encouraging message acknowledging their step towards recovery.
-2.  **Personalized Goals:** Set realistic short-term (e.g., first week, first month) and long-term goals based on their information.
-3.  **Coping Strategies:** Suggest specific strategies to manage cravings and deal with triggers relevant to their substance and situation (e.g., mindfulness for anxiety triggers, distraction techniques, HALT - Hungry, Angry, Lonely, Tired).
-4.  **Building a Support Network:** Recommend types of support (e.g., therapy, support groups like AA/NA/SMART Recovery, trusted friends/family) and how to engage with them.
-5.  **Milestone Recognition:** Briefly mention the importance of celebrating progress (which the app tracks).
-6.  **Relapse Prevention & Management:** Offer basic advice on identifying warning signs and what to do if a lapse occurs (emphasizing self-compassion and getting back on track).
-7.  **Disclaimer:** Include a reminder that this AI plan is not a substitute for professional medical advice and encourage seeking professional help.
+Generate a personalized recovery plan including the following sections. **Use Markdown formatting for clear structure:**
+1.  **## Introduction:** Start with an empathetic and encouraging message acknowledging their step towards recovery.
+2.  **## Personalized Goals:** Set realistic short-term (e.g., first week, first month) and long-term goals based on their information. Use bullet points (* item) for lists of goals.
+3.  **## Coping Strategies:** Suggest specific strategies to manage cravings and deal with triggers relevant to their substance and situation (e.g., mindfulness for anxiety triggers, distraction techniques, HALT - Hungry, Angry, Lonely, Tired). Use bullet points (* item) for listing strategies.
+4.  **## Building a Support Network:** Recommend types of support (e.g., therapy, support groups like AA/NA/SMART Recovery, trusted friends/family) and how to engage with them. Use bullet points (* item).
+5.  **## Milestone Recognition:** Briefly mention the importance of celebrating progress (which the app tracks).
+6.  **## Relapse Prevention & Management:** Offer basic advice on identifying warning signs and what to do if a lapse occurs (emphasizing self-compassion and getting back on track). Use bullet points (* item).
+7.  **## Important Reminder:** Include a reminder that this AI plan is not a substitute for professional medical advice and encourage seeking professional help.
 
 **Output Format:**
-Use clear headings (e.g., using markdown like ## Heading) for each section. Keep the language supportive and non-judgmental.
+Strictly use Markdown. Use "## Heading" for each section title as shown above. Use bullet points (* item) or numbered lists (1. item) for lists within sections. Keep the language supportive and non-judgmental. Ensure proper spacing between sections and list items for readability.
 
 **Generate the Recovery Plan:**
 `,
@@ -114,6 +115,9 @@ const generateRecoveryPlanFlow = ai.defineFlow<
         // Optional: Retry or return a default message
         // throw new Error("Generated recovery plan is too short.");
     }
+     // Basic cleanup: Ensure consistent newlines for markdown processing
+    output.recoveryPlan = output.recoveryPlan.replace(/\\n/g, '\n').replace(/\n\*/g, '\n* ').replace(/\n\d\./g, '\n$& ');
     return output;
   }
 );
+
