@@ -3,11 +3,12 @@
 
 import * as React from 'react';
 import { MeditationPlan } from '@/components/meditation-plan';
+import { BoxBreathingPlan } from '@/components/box-breathing-plan'; // Import the new component
 import { DistractionGames } from '@/components/distraction-games';
 import { EmergencyContacts } from '@/components/emergency-contacts';
 import { PostRelapseGuidance } from '@/components/post-relapse-guidance';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { ShieldCheck, Brain, Gamepad2, Phone, HeartHandshake } from 'lucide-react'; // Icons for sections
+import { ShieldCheck, Brain, Gamepad2, Phone, HeartHandshake, Wind } from 'lucide-react'; // Added Wind icon
 
 export default function RelapsePreventionPage() {
   return (
@@ -21,9 +22,27 @@ export default function RelapsePreventionPage() {
         </p>
       </header>
 
-      <div className="grid w-full max-w-6xl gap-8 md:grid-cols-2">
+      {/* Updated grid layout to accommodate Box Breathing Plan */}
+      <div className="grid w-full max-w-6xl gap-8 md:grid-cols-1 lg:grid-cols-2">
+
+         {/* Box Breathing Plan Section (New) */}
+        <Card className="shadow-lg lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+              <Wind className="h-5 w-5" /> 4-Week Box Breathing Plan
+            </CardTitle>
+            <CardDescription>
+              Learn a simple technique to calm your nervous system and manage stress.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <BoxBreathingPlan />
+          </CardContent>
+        </Card>
+
+
         {/* Meditation Plan Section */}
-        <Card className="shadow-lg md:col-span-1">
+        <Card className="shadow-lg lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-accent">
               <Brain className="h-5 w-5" /> 6-Month Meditation Plan
@@ -38,7 +57,7 @@ export default function RelapsePreventionPage() {
         </Card>
 
         {/* Distraction Games Section */}
-        <Card className="shadow-lg md:col-span-1">
+        <Card className="shadow-lg lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-secondary">
               <Gamepad2 className="h-5 w-5" /> Distraction Tools & Games
@@ -53,7 +72,7 @@ export default function RelapsePreventionPage() {
         </Card>
 
         {/* Emergency Contacts Section */}
-        <Card className="shadow-lg md:col-span-1">
+        <Card className="shadow-lg lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <Phone className="h-5 w-5" /> Emergency Contacts
@@ -67,8 +86,8 @@ export default function RelapsePreventionPage() {
           </CardContent>
         </Card>
 
-        {/* Post-Relapse Guidance Section */}
-        <Card className="shadow-lg md:col-span-1 bg-primary/10 border-primary">
+        {/* Post-Relapse Guidance Section (Spanning full width on large screens) */}
+        <Card className="shadow-lg bg-primary/10 border-primary lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
               <HeartHandshake className="h-5 w-5" /> Post-Relapse Guidance
@@ -85,4 +104,3 @@ export default function RelapsePreventionPage() {
     </main>
   );
 }
-

@@ -4,17 +4,18 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Puzzle, Headphones, Wind } from 'lucide-react'; // Icons for different distractions
+import { Puzzle, Headphones } from 'lucide-react'; // Removed Wind icon
 
 export function DistractionGames() {
   const games = [
-    {
-      id: 'breathing',
-      name: 'Box Breathing Exercise',
-      description: 'Calm your nervous system. Inhale for 4s, hold for 4s, exhale for 4s, hold for 4s. Repeat.',
-      icon: <Wind className="h-5 w-5 text-blue-500" />,
-      action: () => alert('Practice Box Breathing: Inhale (4s) -> Hold (4s) -> Exhale (4s) -> Hold (4s). Repeat 5-10 times.'),
-    },
+    // Removed Box Breathing Exercise entry
+    // {
+    //   id: 'breathing',
+    //   name: 'Box Breathing Exercise',
+    //   description: 'Calm your nervous system. Inhale for 4s, hold for 4s, exhale for 4s, hold for 4s. Repeat.',
+    //   icon: <Wind className="h-5 w-5 text-blue-500" />,
+    //   action: () => alert('Practice Box Breathing: Inhale (4s) -> Hold (4s) -> Exhale (4s) -> Hold (4s). Repeat 5-10 times.'),
+    // },
     {
       id: 'web-game',
       name: 'Simple Web Puzzle',
@@ -31,6 +32,16 @@ export function DistractionGames() {
     },
     // Add more game/tool ideas here
   ];
+
+  // Handle the case where there are no games left after removal
+   if (games.length === 0) {
+    return (
+        <p className="text-sm text-muted-foreground text-center py-4">
+            More distraction tools coming soon!
+        </p>
+    );
+  }
+
 
   return (
     <div className="space-y-4">
