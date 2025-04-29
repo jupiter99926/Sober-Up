@@ -25,10 +25,10 @@ export function DistractionGames() {
     },
     {
       id: 'music',
-      name: 'Listen to Calming Music',
-      description: 'Put on some soothing music or nature sounds.',
+      name: 'Listen to Calming Sounds',
+      description: 'Put on some soothing music, nature sounds (like rain or waves), or ambient tracks.', // Updated description
       icon: <Headphones className="h-5 w-5 text-purple-500" />,
-      action: () => window.open('https://www.youtube.com/results?search_query=calming+music', '_blank'), // Example link
+      action: () => window.open('https://www.youtube.com/results?search_query=calming+music+nature+sounds+ambient', '_blank'), // Updated search query slightly
     },
     // Add more game/tool ideas here
   ];
