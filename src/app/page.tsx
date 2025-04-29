@@ -6,11 +6,12 @@ import Image from 'next/image'; // Import next/image
 import { RecoveryPlanDialog } from '@/components/recovery-plan-dialog';
 import { ProgressTracker } from '@/components/progress-tracker'; // Keep for potential future integration or summary view
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { HeartPulse, Target, TrendingUp, CheckSquare, ImagePlus, Smile, Heart, Brain, Goal, Flame } from 'lucide-react'; // Added icons
+import { HeartPulse, Target, TrendingUp, CheckSquare, ImagePlus, Smile, Heart, Brain, Goal, Flame, Trophy, BookOpen, Check } from 'lucide-react'; // Added icons
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress'; // Import Progress component
 
 // --- Types (Consider moving to src/types if complex) ---
 type Motivation = {
@@ -25,12 +26,33 @@ type Goal = {
     completed: boolean;
 };
 
+// Example type for Workbook items
+type WorkbookItem = {
+  id: string;
+  title: string;
+  description?: string; // Optional description
+  icon: React.ReactNode; // Icon for the item
+  completed: boolean;
+};
+
+
 // --- LocalStorage Keys ---
 const RECOVERY_PLAN_KEY = 'recoveryPlan';
 const SOBRIETY_START_DATE_KEY = 'sobrietyStartDate';
 const MOTIVATIONS_KEY = 'motivations';
 const GOALS_KEY = 'goals';
 const DAILY_PLEDGE_DATE_KEY = 'dailyPledgeDate'; // Store the date of the last pledge
+const PLEDGE_STREAK_KEY = 'pledgeStreak'; // Track consecutive pledge days
+const WORKBOOK_ITEMS_KEY = 'workbookItems'; // Store workbook item state
+
+
+// --- Sample Workbook Data (Replace with dynamic/fetched data later) ---
+const initialWorkbookItems: WorkbookItem[] = [
+  { id: 'wb1', title: 'A perfect day', icon: <Smile className="h-5 w-5 text-blue-500" />, completed: false }, // Changed icon for variety
+  { id: 'wb2', title: 'Advice on habits', description: "If someone asked you what they...", icon: <BookOpen className="h-5 w-5 text-green-500" />, completed: false },
+  { id: 'wb3', title: 'Practice Mindfulness', description: "Spend 5 minutes meditating.", icon: <Brain className="h-5 w-5 text-purple-500" />, completed: false },
+];
+
 
 export default function Home() {
   const [recoveryPlan, setRecoveryPlan] = React.useState<string | null>(null);
@@ -42,6 +64,8 @@ export default function Home() {
   const [newGoalText, setNewGoalText] = React.useState('');
   const [newMotivationText, setNewMotivationText] = React.useState('');
   const [streakDays, setStreakDays] = React.useState(0);
+  const [pledgeStreak, setPledgeStreak] = React.useState(0); // Add state for pledge streak
+  const [workbookItems, setWorkbookItems] = React.useState<WorkbookItem[]>(initialWorkbookItems);
   const { toast } = useToast();
 
   // --- Load data from localStorage on mount ---
@@ -53,7 +77,7 @@ export default function Home() {
     if (storedDate) {
       const startDate = new Date(storedDate);
       setSobrietyStartDate(startDate);
-      // Calculate initial streak
+      // Calculate initial sobriety streak
       const today = new Date();
       const diffTime = Math.abs(today.getTime() - startDate.getTime());
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -72,7 +96,6 @@ export default function Home() {
         ]);
     }
 
-
     const storedGoals = localStorage.getItem(GOALS_KEY);
     if (storedGoals) setGoals(JSON.parse(storedGoals));
 
@@ -81,6 +104,30 @@ export default function Home() {
       const todayStr = new Date().toDateString();
       setPledgedToday(storedPledgeDate === todayStr);
     }
+
+    // Load pledge streak
+     const storedPledgeStreak = localStorage.getItem(PLEDGE_STREAK_KEY);
+     setPledgeStreak(storedPledgeStreak ? parseInt(storedPledgeStreak, 10) : 0);
+
+     // Load workbook items state
+     const storedWorkbookItems = localStorage.getItem(WORKBOOK_ITEMS_KEY);
+     if (storedWorkbookItems) {
+         try {
+            const parsedItems: WorkbookItem[] = JSON.parse(storedWorkbookItems);
+            // Map over initial items to keep structure and update completion status
+            setWorkbookItems(initialWorkbookItems.map(initialItem => {
+                const savedItem = parsedItems.find(saved => saved.id === initialItem.id);
+                return savedItem ? { ...initialItem, completed: savedItem.completed } : initialItem;
+            }));
+         } catch (e) {
+             console.error("Failed to parse workbook items:", e);
+             setWorkbookItems(initialWorkbookItems); // Fallback
+         }
+
+     } else {
+        setWorkbookItems(initialWorkbookItems);
+     }
+
 
   }, []);
 
@@ -97,6 +144,8 @@ export default function Home() {
      setStreakDays(0);
      setPledgedToday(false); // Reset pledge status too
      localStorage.removeItem(DAILY_PLEDGE_DATE_KEY);
+     setPledgeStreak(0); // Reset pledge streak
+     localStorage.removeItem(PLEDGE_STREAK_KEY);
   };
 
   const saveMotivations = (newMotivations: Motivation[]) => {
@@ -109,12 +158,37 @@ export default function Home() {
     localStorage.setItem(GOALS_KEY, JSON.stringify(newGoals));
   };
 
+    const saveWorkbookItems = (items: WorkbookItem[]) => {
+        setWorkbookItems(items);
+        // Only save essential data (id, completed status) to avoid storing icons/complex objects
+        const dataToStore = items.map(({ id, completed }) => ({ id, completed }));
+        localStorage.setItem(WORKBOOK_ITEMS_KEY, JSON.stringify(dataToStore));
+    };
+
   const savePledge = () => {
-     const todayStr = new Date().toDateString();
+     const today = new Date();
+     const todayStr = today.toDateString();
+     const yesterday = new Date(today);
+     yesterday.setDate(today.getDate() - 1);
+     const yesterdayStr = yesterday.toDateString();
+
+     const lastPledgeDate = localStorage.getItem(DAILY_PLEDGE_DATE_KEY);
+     let currentStreak = pledgeStreak;
+
+     if (lastPledgeDate === yesterdayStr) {
+         // Continued streak
+         currentStreak += 1;
+     } else if (lastPledgeDate !== todayStr) {
+         // Reset streak if missed a day or starting new
+         currentStreak = 1;
+     } // If lastPledgeDate === todayStr, do nothing (already pledged today)
+
      setPledgedToday(true);
      localStorage.setItem(DAILY_PLEDGE_DATE_KEY, todayStr);
-     // Optionally, update streak logic here if needed
-      toast({ title: "Pledge Made!", description: "You've committed to staying sober today. You can do this!" });
+     setPledgeStreak(currentStreak);
+     localStorage.setItem(PLEDGE_STREAK_KEY, currentStreak.toString());
+
+      toast({ title: "Pledge Made!", description: `You've committed to staying sober today. Current streak: ${currentStreak} days!` });
   };
 
   // --- Handlers ---
@@ -174,22 +248,34 @@ export default function Home() {
        saveGoals(goals.filter(g => g.id !== id));
    };
 
+   const handleToggleWorkbookItem = (id: string) => {
+     saveWorkbookItems(
+       workbookItems.map((item) =>
+         item.id === id ? { ...item, completed: !item.completed } : item
+       )
+     );
+  };
+
 
   // --- Render Logic ---
   const showGetStarted = !recoveryPlan || !sobrietyStartDate;
+  const challengeProgress = Math.min((pledgeStreak / 7) * 100, 100); // Cap at 100%
+  const daysLeftForChallenge = Math.max(0, 7 - pledgeStreak);
 
   return (
     <main className="container mx-auto flex flex-col items-center p-6 md:p-12 space-y-8">
       <header className="w-full text-center">
         <h1 className="mb-2 text-4xl font-bold text-primary">
-          Reach Your Recovery Goals
+          {showGetStarted ? 'Start Your Recovery' : 'Build Better Habits'} {/* Title changes */}
         </h1>
         <p className="text-lg text-muted-foreground">
-          Your personalized path to overcoming addiction.
+          {showGetStarted
+           ? 'Generate your personalized recovery plan to begin.'
+           : 'Your personalized path to overcoming addiction.'}
         </p>
       </header>
 
-      {/* Get Started / Pledge Section */}
+      {/* Get Started / Pledge & Habits Section */}
       {showGetStarted ? (
          <Card className="w-full max-w-lg text-center shadow-lg border-accent bg-accent/5">
             <CardHeader>
@@ -197,7 +283,7 @@ export default function Home() {
                 <Target className="h-5 w-5"/> Start Your Recovery Journey
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-                Generate your personalized recovery plan to begin.
+                Answer a few questions to create your personalized plan.
             </CardDescription>
             </CardHeader>
             <CardContent>
@@ -207,30 +293,85 @@ export default function Home() {
             </CardContent>
         </Card>
       ) : (
-         <Card className="w-full max-w-lg text-center shadow-md">
-            <CardHeader>
-                 <CardDescription className="text-xs uppercase tracking-wider text-muted-foreground">Daily Pledge</CardDescription>
-                <CardTitle className="text-xl font-semibold text-primary">
-                    {pledgedToday ? "You've Pledged for Today!" : "Make Your Commitment"}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {pledgedToday ? (
-                     <div className="flex items-center justify-center gap-2 text-green-600">
-                        <CheckSquare className="h-6 w-6"/>
-                        <p className="font-medium">Today, I will stay sober.</p>
-                     </div>
-                ) : (
-                    <Button onClick={savePledge} size="lg">
-                        <CheckSquare className="mr-2 h-5 w-5" /> Today, I Will Stay Sober
-                    </Button>
-                )}
-            </CardContent>
-         </Card>
+         <div className="w-full max-w-2xl space-y-8">
+             {/* Today's Pledge Button */}
+             <Card className="w-full text-center shadow-md overflow-hidden">
+                <CardContent className="p-6">
+                    {pledgedToday ? (
+                         <div className="space-y-2">
+                            <p className="font-semibold text-primary">Pledge Made for Today!</p>
+                            <p className="text-sm text-muted-foreground">Come back later to review your day.</p>
+                            <Button variant="link" size="sm" className="text-accent">Review Today Now (Coming Soon)</Button>
+                         </div>
+                    ) : (
+                        <Button onClick={savePledge} size="lg" className="w-full">
+                            <CheckSquare className="mr-2 h-5 w-5" /> Make Today's Pledge
+                        </Button>
+                    )}
+                </CardContent>
+             </Card>
+
+            {/* Challenge Section */}
+            <Card className="w-full shadow-md">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg font-semibold">Challenge</CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center gap-4">
+                    <Trophy className="h-10 w-10 text-orange-400 shrink-0"/>
+                    <div className="flex-grow">
+                        <p className="font-medium">Pledge for seven days</p>
+                         <Progress value={challengeProgress} aria-label={`${pledgeStreak} out of 7 days pledged`} className="h-2 my-1.5 bg-green-100 [&>div]:bg-green-500" />
+                        <p className="text-xs text-muted-foreground">
+                            {daysLeftForChallenge > 0
+                                ? `You're ${daysLeftForChallenge} pledge${daysLeftForChallenge > 1 ? 's' : ''} away from unlocking the pack!`
+                                : "Challenge Complete! 🎉 Keep going!"}
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+
+             {/* Workbook Section */}
+            <Card className="w-full shadow-md">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg font-semibold">Workbook</CardTitle>
+                     <CardDescription className="text-sm text-muted-foreground">
+                         Here are some things you can work on today. Try to complete {Math.min(3, workbookItems.filter(item => !item.completed).length)} of them.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                     {workbookItems.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Workbook activities loading or not available.</p>}
+                    {workbookItems.map((item) => (
+                        <Card key={item.id} className={`bg-card hover:bg-muted/50 transition-colors ${item.completed ? 'opacity-70' : ''}`}>
+                            <CardContent className="p-4 flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-3">
+                                    <span className="shrink-0">{item.icon}</span>
+                                    <div className="flex-grow">
+                                        <p className={`font-medium text-sm ${item.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                                            {item.title}
+                                        </p>
+                                         {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
+                                    </div>
+                                </div>
+                                <Button
+                                    variant={item.completed ? "outline" : "ghost"}
+                                    size="icon"
+                                    className={`h-8 w-8 shrink-0 ${item.completed ? 'border-green-500 text-green-500' : ''}`}
+                                    onClick={() => handleToggleWorkbookItem(item.id)}
+                                    aria-label={item.completed ? 'Mark as incomplete' : 'Mark as complete'}
+                                >
+                                    <Check className="h-4 w-4"/>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </CardContent>
+            </Card>
+         </div>
       )}
 
-      {/* Grid for Recovery Plan, Motivation, Goals, Streaks */}
-       <div className="grid w-full max-w-6xl gap-8 lg:grid-cols-3">
+      {/* Grid for Recovery Plan, Motivation, Goals, Streaks (Only show if plan exists) */}
+      {!showGetStarted && (
+       <div className="grid w-full max-w-6xl gap-8 lg:grid-cols-3 pt-8">
 
          {/* Column 1: Motivation & Goals */}
          <div className="space-y-8 lg:col-span-1">
@@ -337,7 +478,7 @@ export default function Home() {
                  <Card className="shadow-lg bg-yellow-50 border-yellow-200">
                     <CardHeader className="pb-2">
                         <CardTitle className="flex items-center gap-2 text-lg font-medium text-yellow-700">
-                            <Flame className="h-5 w-5"/> Current Streak
+                            <Flame className="h-5 w-5"/> Sobriety Streak
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -356,7 +497,7 @@ export default function Home() {
                         <CardTitle className="text-lg font-medium text-secondary-foreground">
                         Your AI Recovery Plan
                         </CardTitle>
-                        <Brain className="h-5 w-5 text-secondary" />
+                         <Button variant="outline" size="sm" onClick={() => setIsFormOpen(true)} className="text-xs h-7">Regenerate Plan</Button> {/* Add Regenerate button */}
                     </CardHeader>
                     <CardContent>
                          <div className="prose prose-sm max-w-none text-secondary-foreground whitespace-pre-wrap max-h-[70vh] overflow-y-auto">
@@ -368,17 +509,21 @@ export default function Home() {
                                 } else if (trimmedLine.startsWith('# ')) {
                                      return <h1 key={index}>{trimmedLine.substring(2)}</h1>;
                                 } else if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
-                                    return <li key={index}>{trimmedLine.substring(2)}</li>;
+                                    // Basic list item handling - assumes simple lists
+                                    const isSublist = line.match(/^\s{2,}\*/); // Check for indentation
+                                    const style = isSublist ? { marginLeft: '1.5em' } : {};
+                                    return <li key={index} style={style}>{trimmedLine.substring(trimmedLine.indexOf('*') + 1).trim()}</li>;
                                 } else if (/^\d+\.\s/.test(trimmedLine)) {
                                      // Handle numbered lists better if needed, this is basic
-                                     return <li key={index} style={{ listStyleType: 'decimal', marginLeft: '1.5em' }}>{trimmedLine.substring(trimmedLine.indexOf('.') + 1).trim()}</li>;
+                                      return <li key={index} style={{ listStyleType: 'decimal', marginLeft: '1.5em' }}>{trimmedLine.substring(trimmedLine.indexOf('.') + 1).trim()}</li>;
                                 } else if (trimmedLine === '') {
-                                    // Preserve paragraphs by checking original line
+                                    // Try to preserve paragraphs more accurately
                                     return index > 0 && recoveryPlan.split('\n')[index - 1].trim() !== '' ? <br key={index} /> : null;
                                 } else {
+                                    // Render as paragraph if it's not empty and not a heading/list item
                                     return <p key={index}>{trimmedLine}</p>;
                                 }
-                            })}
+                            }).filter(Boolean)} {/* Filter out nulls */}
                         </div>
                     </CardContent>
                 </Card>
@@ -387,7 +532,7 @@ export default function Home() {
          {/* Placeholder if no recovery plan yet in the second/third column space */}
          {!recoveryPlan && !showGetStarted && <div className="lg:col-span-2 hidden lg:block"></div>}
 
-      </div>
+      </div>)}
 
       {/* Dialog for Recovery Plan Form */}
       <RecoveryPlanDialog

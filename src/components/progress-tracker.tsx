@@ -5,7 +5,7 @@ import * as React from 'react';
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInMonths, formatDistanceStrict } from 'date-fns';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, CalendarDays, HeartPulse, Trophy, BarChart, Calendar, DollarSign, Brain } from 'lucide-react'; // Added DollarSign, Brain
+import { Award, CalendarDays, HeartPulse, Trophy, BarChart, DollarSign, Brain } from 'lucide-react'; // Removed Calendar, Added DollarSign, Brain
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton for loading states
@@ -94,7 +94,7 @@ const estimateCaloriesSaved = (daysSober: number) => {
 
 export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
   const [timeSober, setTimeSober] = React.useState(() => calculateTimeSober(sobrietyStartDate));
-  const [loading, setLoading] = React.useState(false); // Keep loading state for potential future async ops if needed
+  // Removed loading state as it's not currently used for async operations here
 
   // Set up timer to update the clock
   React.useEffect(() => {
@@ -135,7 +135,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
           </Card>
 
           {/* Next Milestone Progress */}
-          {loading ? <Skeleton className="h-[130px] w-full" /> : nextMilestone ? (
+          {nextMilestone ? (
             <Card className="shadow-sm">
               <CardHeader className="pb-2">
                 <CardDescription className="flex items-center gap-2 text-sm text-accent font-medium">
@@ -186,8 +186,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
                 <CardTitle className="text-lg font-medium text-secondary-foreground">Your Rewards</CardTitle>
             </CardHeader>
             <CardContent>
-                {loading ? <Skeleton className="h-[60px] w-full" /> :
-                earnedMilestones.length > 0 ? (
+                {earnedMilestones.length > 0 ? (
                 <ScrollArea className="h-[100px] pr-3"> {/* Limit height for scrolling */}
                     <div className="flex flex-wrap gap-2">
                     {earnedMilestones.map((m) => (
