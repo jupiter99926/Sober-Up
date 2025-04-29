@@ -8,7 +8,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Zap } from 'lucide-react'; // Placeholder icon
+import { Youtube } from 'lucide-react'; // Use Youtube icon
+
+// Helper function to generate placeholder YouTube search links
+const getYoutubeSearchLink = (query: string) => {
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+}
 
 export function MeditationPlan() {
   const plan = [
@@ -16,60 +21,60 @@ export function MeditationPlan() {
       month: 1,
       title: 'Month 1: Building the Foundation',
       weeks: [
-        { week: 1, focus: 'Mindful Breathing Basics (5 min/day)', link: '#', description: 'Focus on the sensation of breath entering and leaving your body.' },
-        { week: 2, focus: 'Body Scan Meditation (10 min/day)', link: '#', description: 'Bring gentle, non-judgmental awareness to different parts of the body.' },
-        { week: 3, focus: 'Noticing Thoughts Without Judgment (10 min/day)', link: '#', description: 'Observe thoughts as passing mental events, like clouds in the sky.' },
-        { week: 4, focus: 'Mindful Walking (10 min/day)', link: '#', description: 'Pay attention to the physical sensations of walking.' },
+        { week: 1, focus: 'Mindful Breathing Basics (5 min/day)', description: 'Focus on the sensation of breath entering and leaving your body.', links: [getYoutubeSearchLink('5 minute mindful breathing meditation'), getYoutubeSearchLink('introduction to mindful breathing')] },
+        { week: 2, focus: 'Body Scan Meditation (10 min/day)', description: 'Bring gentle, non-judgmental awareness to different parts of the body.', links: [getYoutubeSearchLink('10 minute body scan meditation guided'), getYoutubeSearchLink('body scan for beginners')] },
+        { week: 3, focus: 'Noticing Thoughts Without Judgment (10 min/day)', description: 'Observe thoughts as passing mental events, like clouds in the sky.', links: [getYoutubeSearchLink('observing thoughts meditation 10 minutes'), getYoutubeSearchLink('thoughts are not facts meditation')] },
+        { week: 4, focus: 'Mindful Walking (10 min/day)', description: 'Pay attention to the physical sensations of walking.', links: [getYoutubeSearchLink('10 minute mindful walking guided meditation'), getYoutubeSearchLink('how to practice mindful walking')] },
       ],
     },
     {
       month: 2,
       title: 'Month 2: Deepening Practice',
       weeks: [
-        { week: 5, focus: 'Sitting with Discomfort (15 min/day)', link: '#', description: 'Gently acknowledge and allow difficult physical sensations or emotions.' },
-        { week: 6, focus: 'Loving-Kindness Meditation (15 min/day)', link: '#', description: 'Cultivate feelings of warmth, kindness, and compassion for self and others.' },
-        { week: 7, focus: 'Mindfulness of Emotions (15 min/day)', link: '#', description: 'Recognize and name emotions without getting carried away by them.' },
-        { week: 8, focus: 'Urge Surfing Technique (Practice as needed)', link: '#', description: 'Observe cravings like waves, rising and falling, without acting on them.' },
+        { week: 5, focus: 'Sitting with Discomfort (15 min/day)', description: 'Gently acknowledge and allow difficult physical sensations or emotions.', links: [getYoutubeSearchLink('meditation for difficult emotions 15 minutes'), getYoutubeSearchLink('sitting with discomfort mindfulness')] },
+        { week: 6, focus: 'Loving-Kindness Meditation (15 min/day)', description: 'Cultivate feelings of warmth, kindness, and compassion for self and others.', links: [getYoutubeSearchLink('15 minute loving kindness meditation guided'), getYoutubeSearchLink('metta meditation practice')] },
+        { week: 7, focus: 'Mindfulness of Emotions (15 min/day)', description: 'Recognize and name emotions without getting carried away by them.', links: [getYoutubeSearchLink('mindfulness of emotions guided meditation'), getYoutubeSearchLink('labeling emotions mindfulness')] },
+        { week: 8, focus: 'Urge Surfing Technique (Practice as needed)', description: 'Observe cravings like waves, rising and falling, without acting on them.', links: [getYoutubeSearchLink('urge surfing guided meditation'), getYoutubeSearchLink('how to practice urge surfing')] },
       ],
     },
     {
       month: 3,
       title: 'Month 3: Integration & Awareness',
       weeks: [
-        { week: 9, focus: 'Mindful Listening (15 min/day)', link: '#', description: 'Focus fully on the sounds around you, without labeling or judging.' },
-        { week: 10, focus: 'Mindful Eating (Practice with one meal/day)', link: '#', description: 'Pay attention to the tastes, textures, and smells of your food.' },
-        { week: 11, focus: 'Open Awareness Meditation (20 min/day)', link: '#', description: 'Rest in awareness, noticing whatever arises in your experience without a specific focus.' },
-        { week: 12, focus: 'Mindfulness of Daily Activities', link: '#', description: 'Bring awareness to routine tasks like brushing teeth or washing dishes.' },
+        { week: 9, focus: 'Mindful Listening (15 min/day)', description: 'Focus fully on the sounds around you, without labeling or judging.', links: [getYoutubeSearchLink('mindful listening meditation guided 15 minutes'), getYoutubeSearchLink('sounds and thoughts meditation')] },
+        { week: 10, focus: 'Mindful Eating (Practice with one meal/day)', description: 'Pay attention to the tastes, textures, and smells of your food.', links: [getYoutubeSearchLink('mindful eating exercise guided'), getYoutubeSearchLink('introduction to mindful eating')] },
+        { week: 11, focus: 'Open Awareness Meditation (20 min/day)', description: 'Rest in awareness, noticing whatever arises in your experience without a specific focus.', links: [getYoutubeSearchLink('open awareness meditation 20 minutes'), getYoutubeSearchLink('choiceless awareness meditation guide')] },
+        { week: 12, focus: 'Mindfulness of Daily Activities', description: 'Bring awareness to routine tasks like brushing teeth or washing dishes.', links: [getYoutubeSearchLink('mindfulness in daily life exercises'), getYoutubeSearchLink('integrating mindfulness into routine')] },
       ],
     },
      {
       month: 4,
       title: 'Month 4: Stability & Self-Compassion',
       weeks: [
-        { week: 13, focus: 'Lengthening Sitting Practice (20-25 min/day)', link: '#', description: 'Gradually increase the duration of your chosen formal practice.' },
-        { week: 14, focus: 'Self-Compassion Break (Practice as needed)', link: '#', description: 'Offer yourself kindness and understanding during difficult moments.' },
-        { week: 15, focus: 'Mindfulness of Communication', link: '#', description: 'Practice listening fully and speaking mindfully in conversations.' },
-        { week: 16, focus: 'Reviewing Core Concepts', link: '#', description: 'Revisit mindful breathing, body scan, and thought awareness techniques.' },
+        { week: 13, focus: 'Lengthening Sitting Practice (20-25 min/day)', description: 'Gradually increase the duration of your chosen formal practice.', links: [getYoutubeSearchLink('25 minute guided meditation sitting'), getYoutubeSearchLink('deepening your meditation practice')] },
+        { week: 14, focus: 'Self-Compassion Break (Practice as needed)', description: 'Offer yourself kindness and understanding during difficult moments.', links: [getYoutubeSearchLink('self compassion break guided meditation kristin neff'), getYoutubeSearchLink('quick self compassion exercise')] },
+        { week: 15, focus: 'Mindfulness of Communication', description: 'Practice listening fully and speaking mindfully in conversations.', links: [getYoutubeSearchLink('mindful communication exercises'), getYoutubeSearchLink('deep listening practice')] },
+        { week: 16, focus: 'Reviewing Core Concepts', description: 'Revisit mindful breathing, body scan, and thought awareness techniques.', links: [getYoutubeSearchLink('mindfulness basics review meditation'), getYoutubeSearchLink('foundations of mindfulness practice')] },
       ],
     },
      {
       month: 5,
       title: 'Month 5: Insight & Equanimity',
       weeks: [
-        { week: 17, focus: 'Observing Impermanence (25 min/day)', link: '#', description: 'Notice the changing nature of thoughts, feelings, and sensations.' },
-        { week: 18, focus: 'Working with Difficult Emotions', link: '#', description: 'Apply RAIN (Recognize, Allow, Investigate, Nurture) to challenging feelings.' },
-        { week: 19, focus: 'Expanding Loving-Kindness', link: '#', description: 'Extend compassionate wishes to difficult people or situations.' },
-        { week: 20, focus: 'Mindfulness in High-Stress Situations', link: '#', description: 'Practice grounding techniques (like 5-4-3-2-1) during stressful moments.' },
+        { week: 17, focus: 'Observing Impermanence (25 min/day)', description: 'Notice the changing nature of thoughts, feelings, and sensations.', links: [getYoutubeSearchLink('impermanence meditation guided 25 minutes'), getYoutubeSearchLink('mindfulness of change meditation')] },
+        { week: 18, focus: 'Working with Difficult Emotions (RAIN)', description: 'Apply RAIN (Recognize, Allow, Investigate, Nurture) to challenging feelings.', links: [getYoutubeSearchLink('rain meditation guided tara brach'), getYoutubeSearchLink('how to practice rain meditation')] },
+        { week: 19, focus: 'Expanding Loving-Kindness', description: 'Extend compassionate wishes to difficult people or situations.', links: [getYoutubeSearchLink('loving kindness for difficult people meditation'), getYoutubeSearchLink('advanced loving kindness practice')] },
+        { week: 20, focus: 'Mindfulness in High-Stress Situations', description: 'Practice grounding techniques (like 5-4-3-2-1) during stressful moments.', links: [getYoutubeSearchLink('mindfulness for stress and anxiety guided'), getYoutubeSearchLink('54321 grounding technique exercise')] },
       ],
     },
      {
       month: 6,
       title: 'Month 6: Sustaining Practice & Integration',
       weeks: [
-        { week: 21, focus: 'Consistent Practice (25-30 min/day)', link: '#', description: 'Maintain a regular daily meditation routine.' },
-        { week: 22, focus: 'Mindful Check-ins Throughout the Day', link: '#', description: 'Pause briefly several times a day to notice your breath and current state.' },
-        { week: 23, focus: 'Generosity and Gratitude Practice', link: '#', description: 'Reflect on things you are grateful for or acts of kindness.' },
-        { week: 24, focus: 'Planning for Ongoing Practice', link: '#', description: 'Reflect on progress, challenges, and set intentions for continuing mindfulness long-term.' },
+        { week: 21, focus: 'Consistent Practice (25-30 min/day)', description: 'Maintain a regular daily meditation routine.', links: [getYoutubeSearchLink('30 minute silent meditation timer with bells'), getYoutubeSearchLink('building a consistent meditation habit')] },
+        { week: 22, focus: 'Mindful Check-ins Throughout the Day', description: 'Pause briefly several times a day to notice your breath and current state.', links: [getYoutubeSearchLink('mini mindfulness breaks guided'), getYoutubeSearchLink('how to do mindful check ins')] },
+        { week: 23, focus: 'Generosity and Gratitude Practice', description: 'Reflect on things you are grateful for or acts of kindness.', links: [getYoutubeSearchLink('gratitude meditation guided practice'), getYoutubeSearchLink('cultivating generosity mindfulness')] },
+        { week: 24, focus: 'Planning for Ongoing Practice', description: 'Reflect on progress, challenges, and set intentions for continuing mindfulness long-term.', links: [getYoutubeSearchLink('maintaining mindfulness practice long term'), getYoutubeSearchLink('setting intentions for meditation')] },
       ],
     },
   ];
@@ -82,23 +87,28 @@ export function MeditationPlan() {
             {monthData.title}
           </AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-3 pl-2 border-l-2 border-accent/50 ml-2">
+            <div className="space-y-4 pl-2 border-l-2 border-accent/50 ml-2">
               {monthData.weeks.map((weekData) => (
-                <div key={weekData.week} className="text-sm">
+                <div key={weekData.week} className="text-sm pb-3 border-b border-border/50 last:border-b-0 last:pb-0">
                   <p className="font-medium text-foreground">
                     Week {weekData.week}: {weekData.focus}
                   </p>
-                  <p className="text-xs text-muted-foreground mb-1">{weekData.description}</p>
-                  {/* Placeholder for actual guided meditation link/player */}
-                  <a
-                    href={weekData.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline inline-flex items-center gap-1"
-                    onClick={(e) => e.preventDefault()} // Prevent actual navigation for placeholder
-                  >
-                    <Zap className="h-3 w-3" /> Access Guided Practice (Coming Soon)
-                  </a>
+                  <p className="text-xs text-muted-foreground mb-2">{weekData.description}</p>
+                  <div className="mt-2 space-y-1">
+                     <p className="text-xs text-muted-foreground italic">The following videos have been suggested by AI for you, follow the link to be redirected to YouTube:</p>
+                     {weekData.links.map((link, index) => (
+                         <a
+                            key={index}
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline flex items-center gap-1.5 group"
+                          >
+                            <Youtube className="h-3.5 w-3.5 text-red-600 group-hover:text-red-700 transition-colors" />
+                            Suggested Practice Video {index + 1}
+                          </a>
+                     ))}
+                  </div>
                 </div>
               ))}
             </div>
