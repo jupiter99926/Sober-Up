@@ -60,8 +60,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
                         tooltip={item.label}
                         className="w-full justify-start" // Ensure button takes full width
                     >
-                        {item.icon}
-                        <span className="ml-2">{item.label}</span> {/* Add margin for spacing */}
+                         {/* Ensure icon has correct styling if needed */}
+                         {React.cloneElement(item.icon as React.ReactElement, { className: "h-4 w-4" })}
+                         <span className="ml-2">{item.label}</span> {/* Add margin for spacing */}
                     </SidebarMenuButton>
                  </Link>
               </SidebarMenuItem>
@@ -82,4 +83,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
-

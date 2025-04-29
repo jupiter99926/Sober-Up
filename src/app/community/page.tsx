@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Users, Handshake, Trophy, MessageSquare, PlusCircle, SendHorizontal, Settings, Info, UsersRound, History, Search, Filter, Pencil, ThumbsUp } from 'lucide-react'; // Added Pencil, ThumbsUp
+import { Users, Handshake, Trophy, MessageSquare, PlusCircle, SendHorizontal, Settings, Info, UsersRound, History, Search, Filter, Pencil, ThumbsUp, MessageCircle } from 'lucide-react'; // Added MessageCircle
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,8 +11,10 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea'; // Added Textarea
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { ScrollArea } from '@/components/ui/scroll-area'; // Import ScrollArea
+import { cn } from '@/lib/utils'; // Import cn for conditional classes
 
 // Placeholder data (replace with actual data fetching)
 const members = [
@@ -69,13 +71,44 @@ const initialFeedItems: FeedItem[] = [
     },
 ];
 
+// Type for Group Chat Messages
+type GroupChatMessage = {
+  id: string;
+  sender: { id: string; name: string; avatarUrl: string; };
+  text: string;
+  timestamp: string;
+};
+
+// Sample Group Chat Data
+const initialGroupChatMessages: GroupChatMessage[] = [
+  { id: 'gm1', sender: members[0], text: 'Hey everyone, just checking in. Hope you\'re all having a good day!', timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString() },
+  { id: 'gm2', sender: members[1], text: 'Doing okay Kristoff, thanks! Found the urge surfing technique helpful earlier.', timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString() },
+  { id: 'gm3', sender: members[3], text: 'Glad to hear that Cali! Keep it up.', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
+];
+
+// Placeholder for current user info
+const currentUser = { id: 'currentUser', name: 'You', avatarUrl: 'https://picsum.photos/seed/you/40/40' };
 
 export default function CommunityPage() {
   const [isJoined, setIsJoined] = React.useState(false); // Track join status
   const [newPost, setNewPost] = React.useState('');
   const [feedItems, setFeedItems] = React.useState<FeedItem[]>(initialFeedItems);
   const [commentInputs, setCommentInputs] = React.useState<Record<string, string>>({}); // Store comment input per item { itemId: commentText }
+  const [groupChatMessages, setGroupChatMessages] = React.useState<GroupChatMessage[]>(initialGroupChatMessages);
+  const [newChatMessage, setNewChatMessage] = React.useState('');
+  const chatScrollAreaRef = React.useRef<HTMLDivElement>(null); // Ref for chat scroll area
   const { toast } = useToast();
+
+  // Scroll chat to bottom when new messages arrive
+  React.useEffect(() => {
+    if (chatScrollAreaRef.current) {
+      chatScrollAreaRef.current.scrollTo({
+        top: chatScrollAreaRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [groupChatMessages]);
+
 
   const handleJoinToggle = () => {
     setIsJoined(!isJoined);
@@ -88,8 +121,6 @@ export default function CommunityPage() {
 
   const handleCreatePost = () => {
     if (!newPost.trim()) return;
-
-    const currentUser = { id: 'currentUser', name: 'You', avatarUrl: 'https://picsum.photos/seed/you/40/40' }; // Placeholder for logged-in user
 
     const newFeedItem: FeedItem = {
         id: crypto.randomUUID(),
@@ -110,8 +141,6 @@ export default function CommunityPage() {
    const handleAddComment = (itemId: string) => {
     const commentText = commentInputs[itemId]?.trim();
     if (!commentText) return;
-
-    const currentUser = { id: 'currentUser', name: 'You', avatarUrl: 'https://picsum.photos/seed/you/40/40' }; // Placeholder
 
     const newComment = {
       id: crypto.randomUUID(),
@@ -150,7 +179,23 @@ export default function CommunityPage() {
          // Could also track if the current user has already liked it
     };
 
-  // Helper to format timestamp (e.g., "5 hours ago", "Oct 14")
+    const handleSendChatMessage = () => {
+        if (!newChatMessage.trim() || !isJoined) return;
+
+        const messageToSend: GroupChatMessage = {
+            id: crypto.randomUUID(),
+            sender: currentUser,
+            text: newChatMessage.trim(),
+            timestamp: new Date().toISOString(),
+        };
+
+        setGroupChatMessages([...groupChatMessages, messageToSend]);
+        setNewChatMessage('');
+        // In a real app, this would trigger an API call/websocket event to send the message
+         toast({ title: 'Message Sent', description: 'Your message has been sent to the group chat.' });
+    };
+
+  // Helper to format timestamp (e.g., "5 hours ago", "10m ago")
   const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -164,6 +209,21 @@ export default function CommunityPage() {
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); // e.g., Oct 14
+  };
+
+    // Helper to format chat timestamp (e.g., "10:30 AM", "Yesterday 2:15 PM")
+  const formatChatTimestamp = (timestamp: string): string => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffDays = Math.round((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) { // Today
+      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    } else if (diffDays === 1) { // Yesterday
+      return `Yesterday ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+    } else { // Older
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
   };
 
 
@@ -220,9 +280,11 @@ export default function CommunityPage() {
                </div>
 
               {/* Inner Tabs for Group Sections */}
-              <Tabs defaultValue="latest" className="w-full mt-4 flex flex-col flex-1 overflow-hidden"> {/* Flex column */}
-                 <TabsList className="grid w-full grid-cols-4 h-auto p-1 shrink-0"> {/* Shrink tabs */}
+               {/* Increased grid columns for the new 'Chat' tab */}
+               <Tabs defaultValue="latest" className="w-full mt-4 flex flex-col flex-1 overflow-hidden"> {/* Flex column */}
+                 <TabsList className="grid w-full grid-cols-5 h-auto p-1 shrink-0"> {/* Changed to 5 columns */}
                    <TabsTrigger value="latest" className="text-xs"> <History className="w-3 h-3 mr-1 inline"/> Latest</TabsTrigger>
+                    <TabsTrigger value="chat" className="text-xs"> <MessageCircle className="w-3 h-3 mr-1 inline"/> Chat</TabsTrigger> {/* New Chat Tab */}
                    <TabsTrigger value="members" className="text-xs"> <Users className="w-3 h-3 mr-1 inline"/> Members</TabsTrigger>
                    <TabsTrigger value="about" className="text-xs"> <Info className="w-3 h-3 mr-1 inline"/> About</TabsTrigger>
                    <TabsTrigger value="settings" className="text-xs"> <Settings className="w-3 h-3 mr-1 inline"/> Settings</TabsTrigger>
@@ -353,6 +415,7 @@ export default function CommunityPage() {
                                             disabled={!commentInputs[item.id]?.trim()}
                                         >
                                             <SendHorizontal className="h-4 w-4" />
+                                            <span className="sr-only">Send Comment</span>
                                         </Button>
                                     </div>
                                 )}
@@ -363,6 +426,92 @@ export default function CommunityPage() {
                     {/* End of Feed Indicator (optional) */}
                      <p className="text-center text-xs text-muted-foreground py-4">End of feed.</p>
 
+                 </TabsContent>
+
+                  {/* Chat Tab Content */}
+                 <TabsContent value="chat" className="mt-4 flex-1 flex flex-col overflow-hidden">
+                    <ScrollArea className="flex-1 p-4" viewportRef={chatScrollAreaRef}> {/* Use viewportRef */}
+                        <div className="space-y-4 pr-4">
+                           {groupChatMessages.length === 0 && !isJoined && (
+                                <div className="text-center text-sm text-muted-foreground p-6 bg-muted/50 rounded-lg">
+                                    Join the group to participate in the chat.
+                                </div>
+                           )}
+                           {groupChatMessages.length === 0 && isJoined && (
+                                <div className="text-center text-sm text-muted-foreground p-6 bg-muted/50 rounded-lg">
+                                    No messages yet. Start the conversation!
+                                </div>
+                           )}
+                            {groupChatMessages.map((msg) => (
+                                <div
+                                    key={msg.id}
+                                    className={cn(
+                                    'flex items-end gap-2',
+                                    msg.sender.id === currentUser.id ? 'justify-end' : 'justify-start'
+                                    )}
+                                >
+                                    {/* Avatar for received messages */}
+                                     {msg.sender.id !== currentUser.id && (
+                                         <Avatar className="h-7 w-7">
+                                            <AvatarImage src={msg.sender.avatarUrl || `https://picsum.photos/seed/${msg.sender.id}/30/30`} alt={msg.sender.name} />
+                                            <AvatarFallback>{msg.sender.name.substring(0, 1).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                     )}
+                                    {/* Message Bubble */}
+                                    <div
+                                        className={cn(
+                                        'max-w-[75%] rounded-lg px-3 py-2 text-sm shadow-sm',
+                                        msg.sender.id === currentUser.id
+                                            ? 'bg-primary text-primary-foreground'
+                                            : 'bg-muted'
+                                        )}
+                                    >
+                                        {/* Sender Name (for received messages) */}
+                                        {msg.sender.id !== currentUser.id && (
+                                            <p className="text-xs font-semibold mb-0.5 text-foreground/80">{msg.sender.name}</p>
+                                        )}
+                                        {/* Message Text */}
+                                        <p className="whitespace-pre-wrap">{msg.text}</p>
+                                         {/* Timestamp */}
+                                         <p className={cn("text-xs mt-1", msg.sender.id === currentUser.id ? 'text-primary-foreground/70 text-right' : 'text-muted-foreground/80 text-left')}>
+                                            {formatChatTimestamp(msg.timestamp)}
+                                        </p>
+                                    </div>
+                                     {/* Avatar for sent messages */}
+                                     {msg.sender.id === currentUser.id && (
+                                        <Avatar className="h-7 w-7">
+                                            <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
+                                            <AvatarFallback>{currentUser.name.substring(0, 1).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                     {/* Chat Input Area (Only if joined) */}
+                     {isJoined && (
+                         <div className="border-t p-4 mt-auto"> {/* Ensures input is at the bottom */}
+                             <div className="flex items-center gap-2 w-full">
+                                <Input
+                                    placeholder="Type your message..."
+                                    value={newChatMessage}
+                                    onChange={(e) => setNewChatMessage(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSendChatMessage()}
+                                    className="h-9 text-sm flex-grow"
+                                />
+                                <Button
+                                    type="button"
+                                    size="icon"
+                                    className="h-9 w-9"
+                                    onClick={handleSendChatMessage}
+                                    disabled={!newChatMessage.trim()}
+                                >
+                                    <SendHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Send Message</span>
+                                </Button>
+                            </div>
+                         </div>
+                     )}
                  </TabsContent>
 
                  <TabsContent value="members" className="flex-1 overflow-y-auto p-4">
@@ -404,5 +553,3 @@ export default function CommunityPage() {
     </main>
   );
 }
-
-    
