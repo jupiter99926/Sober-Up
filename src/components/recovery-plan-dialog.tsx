@@ -39,12 +39,13 @@ import { generateRecoveryPlan, type RecoveryPlanInput } from '@/ai/flows/ai-reco
 
 const drugTypes = ['Weed', 'Alcohol', 'Cocaine', 'Opioids', 'Methamphetamine', 'Other'];
 
+// Updated form schema to make mentalHealthHistory optional
 const formSchema = z.object({
   drugType: z.string().min(1, 'Please select the primary substance.'),
   addictionLength: z.string().min(1, 'Please specify the duration of addiction.'),
   usageFrequency: z.string().min(1, 'Please describe your usage frequency.'),
   triggers: z.string().min(5, 'Please describe your triggers (min 5 characters).'),
-  mentalHealthHistory: z.string().min(5, 'Please describe your mental health history (min 5 characters).'),
+  mentalHealthHistory: z.string().optional(), // Make optional, remove min length validation or adjust as needed
 });
 
 type RecoveryPlanDialogProps = {
@@ -64,7 +65,7 @@ export function RecoveryPlanDialog({ isOpen, onOpenChange, onPlanGenerated }: Re
       addictionLength: '',
       usageFrequency: '',
       triggers: '',
-      mentalHealthHistory: '',
+      mentalHealthHistory: '', // Keep default as empty string
     },
   });
 
@@ -80,7 +81,11 @@ export function RecoveryPlanDialog({ isOpen, onOpenChange, onPlanGenerated }: Re
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const input: RecoveryPlanInput = values;
+      // Ensure optional field is handled correctly if empty
+      const input: RecoveryPlanInput = {
+          ...values,
+          mentalHealthHistory: values.mentalHealthHistory?.trim() || undefined, // Send undefined if empty/whitespace
+      };
       const result = await generateRecoveryPlan(input);
       onPlanGenerated(result.recoveryPlan);
       toast({
@@ -93,7 +98,7 @@ export function RecoveryPlanDialog({ isOpen, onOpenChange, onPlanGenerated }: Re
       toast({
         variant: 'destructive',
         title: 'Error Generating Plan',
-        description: 'Could not generate the recovery plan. Please try again.',
+        description: error instanceof Error ? error.message : 'Could not generate the recovery plan. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -114,7 +119,7 @@ export function RecoveryPlanDialog({ isOpen, onOpenChange, onPlanGenerated }: Re
         </DialogHeader>
         <Form {...form}>
           {/* Added overflow-y-auto and max-h for scrollable content */}
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto max-h-[60vh] p-1 pr-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} id="recovery-plan-form" className="space-y-4 overflow-y-auto max-h-[60vh] p-1 pr-4">
             <FormField
               control={form.control}
               name="drugType"
@@ -198,17 +203,19 @@ export function RecoveryPlanDialog({ isOpen, onOpenChange, onPlanGenerated }: Re
               name="mentalHealthHistory"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mental Health History</FormLabel>
+                  <FormLabel>Mental Health History (Optional)</FormLabel> {/* Update label */}
                   <FormControl>
                     <Textarea
-                      placeholder="Briefly describe any relevant mental health history (e.g., anxiety, depression). Type 'None' if not applicable."
+                      placeholder="Briefly describe any relevant mental health history (e.g., anxiety, depression). Leave blank if not applicable."
                       className="resize-none"
                       rows={3} // Adjust rows as needed
                       {...field}
+                      // Ensure value is handled correctly (might need value={field.value || ''})
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormDescription className="text-xs">
-                    This helps tailor the plan more effectively (optional but recommended).
+                    Sharing this helps tailor the plan but is optional.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -218,7 +225,7 @@ export function RecoveryPlanDialog({ isOpen, onOpenChange, onPlanGenerated }: Re
           </form>
         </Form>
          <DialogFooter>
-            <Button type="submit" form="recovery-plan-form" disabled={isLoading} onClick={form.handleSubmit(onSubmit)}>
+            <Button type="submit" form="recovery-plan-form" disabled={isLoading}> {/* Remove onClick here, it's handled by form submission */}
                 {isLoading ? (
                     <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

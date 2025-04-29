@@ -26,7 +26,8 @@ const RecoveryPlanInputSchema = z.object({
     .describe('The triggers that makes the user take drugs.'),
   mentalHealthHistory: z
     .string()
-    .describe('The mental health history of the user.'),
+    .optional() // Make this field optional
+    .describe('The mental health history of the user (optional).'),
 });
 export type RecoveryPlanInput = z.infer<typeof RecoveryPlanInputSchema>;
 
@@ -59,7 +60,8 @@ const prompt = ai.definePrompt({
         .describe('The triggers that makes the user take drugs.'),
       mentalHealthHistory: z
         .string()
-        .describe('The mental health history of the user.'),
+        .optional() // Reflect optionality here too
+        .describe('The mental health history of the user (optional).'),
     }),
   },
   output: {
@@ -76,18 +78,18 @@ const prompt = ai.definePrompt({
 *   **Duration of Addiction:** {{{addictionLength}}}
 *   **Usage Frequency:** {{{usageFrequency}}}
 *   **Identified Triggers:** {{{triggers}}}
-*   **Mental Health Context:** {{{mentalHealthHistory}}}
+*   **Mental Health Context (Optional):** {{#if mentalHealthHistory}}{{{mentalHealthHistory}}}{{else}}Not provided{{/if}}
 
 **Instructions:**
 Generate a personalized recovery plan including the following sections. **Use Markdown formatting for clear structure:**
 1.  **## Introduction:** Start with an empathetic and encouraging message acknowledging their step towards recovery.
 2.  **## Personalized Goals:** Set realistic short-term (e.g., first week, first month) and long-term goals based on their information. Use bullet points (* item) for lists of goals.
-3.  **## Coping Strategies:** Suggest specific strategies to manage cravings and deal with triggers relevant to their substance and situation (e.g., mindfulness for anxiety triggers, distraction techniques, HALT - Hungry, Angry, Lonely, Tired). Use bullet points (* item) for listing strategies.
-4.  **## Building a Support Network:** Recommend types of support (e.g., therapy, support groups like AA/NA/SMART Recovery, trusted friends/family) and how to engage with them. Use bullet points (* item).
+3.  **## Coping Strategies:** Suggest specific strategies to manage cravings and deal with triggers relevant to their substance and situation (e.g., mindfulness for anxiety triggers, distraction techniques, HALT - Hungry, Angry, Lonely, Tired). Use bullet points (* item) for listing strategies. If mental health history was provided, tailor suggestions accordingly where appropriate.
+4.  **## Building a Support Network:** Recommend types of support (e.g., therapy, support groups like AA/NA/SMART Recovery, trusted friends/family) and how to engage with them. Use bullet points (* item). Suggest seeking professional help, especially if mental health concerns are present or mentioned.
 5.  **## Milestone Recognition:** Briefly mention the importance of celebrating progress (which the app tracks).
 6.  **## Relapse Prevention & Management:** Offer basic advice on identifying warning signs and what to do if a lapse occurs (emphasizing self-compassion and getting back on track). Use bullet points (* item).
 7.  **## Community Support:** Encourage joining support groups within the app (like SoberTown) for peer interaction, pledging, and sharing progress. Mention features like posting updates, commenting, and participating in group chats. Use bullet points (* item).
-8.  **## Important Reminder:** Include a reminder that this AI plan is not a substitute for professional medical advice and encourage seeking professional help.
+8.  **## Important Reminder:** Include a reminder that this AI plan is not a substitute for professional medical advice and encourage seeking professional help, particularly for co-occurring mental health conditions if mentioned or suspected.
 
 **Output Format:**
 Strictly use Markdown. Use "## Heading" for each section title as shown above. Use bullet points (* item) or numbered lists (1. item) for lists within sections. Keep the language supportive and non-judgmental. Ensure proper spacing between sections and list items for readability.
@@ -119,7 +121,10 @@ const generateRecoveryPlanFlow = ai.defineFlow<
       // Basic validation: Ensure the plan is not empty or just whitespace
       if (output.recoveryPlan.trim().length === 0) {
           console.warn("Generated recovery plan is empty or whitespace only.");
-          throw new Error("Generated recovery plan is empty.");
+          // Attempt to generate a fallback or throw error
+           throw new Error("Generated recovery plan is empty.");
+           // Alternatively, could return a default message:
+           // return { recoveryPlan: "## Recovery Plan\n\nWe encountered an issue generating the full plan. Please ensure all required fields were filled and try again. Remember to seek professional help for personalized guidance." };
       }
 
       console.log("AI Recovery Plan Generated Successfully. Usage:", usage); // Log success and usage
