@@ -86,12 +86,14 @@ Generate a personalized recovery plan including the following sections. **Use Ma
 4.  **## Building a Support Network:** Recommend types of support (e.g., therapy, support groups like AA/NA/SMART Recovery, trusted friends/family) and how to engage with them. Use bullet points (* item).
 5.  **## Milestone Recognition:** Briefly mention the importance of celebrating progress (which the app tracks).
 6.  **## Relapse Prevention & Management:** Offer basic advice on identifying warning signs and what to do if a lapse occurs (emphasizing self-compassion and getting back on track). Use bullet points (* item).
-7.  **## Important Reminder:** Include a reminder that this AI plan is not a substitute for professional medical advice and encourage seeking professional help.
+7.  **## Community Support:** Encourage joining support groups within the app (like SoberTown) for peer interaction, pledging, and sharing progress. Mention features like posting updates, commenting, and participating in group chats. Use bullet points (* item).
+8.  **## Important Reminder:** Include a reminder that this AI plan is not a substitute for professional medical advice and encourage seeking professional help.
 
 **Output Format:**
 Strictly use Markdown. Use "## Heading" for each section title as shown above. Use bullet points (* item) or numbered lists (1. item) for lists within sections. Keep the language supportive and non-judgmental. Ensure proper spacing between sections and list items for readability.
 
 **Generate the Recovery Plan:**
+Ensure the entire generated plan is placed within the 'recoveryPlan' field of the output JSON object.
 `,
 });
 
@@ -104,20 +106,36 @@ const generateRecoveryPlanFlow = ai.defineFlow<
     inputSchema: RecoveryPlanInputSchema,
     outputSchema: RecoveryPlanOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error("AI failed to generate a recovery plan.");
+  async (input) => {
+    try {
+      const { output, usage } = await prompt(input); // Capture usage info if needed
+
+      // Check if the output exists and has the recoveryPlan field
+      if (!output || !output.recoveryPlan) {
+          console.error("AI prompt returned null or undefined output, or missing recoveryPlan field.");
+          throw new Error("AI failed to generate a recovery plan. Output was missing or incomplete.");
+      }
+
+      // Basic validation: Ensure the plan is not empty or just whitespace
+      if (output.recoveryPlan.trim().length === 0) {
+          console.warn("Generated recovery plan is empty or whitespace only.");
+          throw new Error("Generated recovery plan is empty.");
+      }
+
+      console.log("AI Recovery Plan Generated Successfully. Usage:", usage); // Log success and usage
+      return output; // Return the valid output object
+
+    } catch (error: unknown) {
+        // Log the error for debugging
+        console.error("Error executing generateRecoveryPlanFlow:", error);
+
+        // Re-throw a more specific error or handle it gracefully
+        if (error instanceof Error) {
+            throw new Error(`Failed to generate recovery plan: ${error.message}`);
+        } else {
+            throw new Error("An unknown error occurred while generating the recovery plan.");
+        }
     }
-    // Basic check for plan content - refine as needed
-    if (output.recoveryPlan.length < 50) {
-        console.warn("Generated recovery plan seems short:", output.recoveryPlan);
-        // Optional: Retry or return a default message
-        // throw new Error("Generated recovery plan is too short.");
-    }
-     // Basic cleanup: Ensure consistent newlines for markdown processing
-    output.recoveryPlan = output.recoveryPlan.replace(/\\n/g, '\n').replace(/\n\*/g, '\n* ').replace(/\n\d\./g, '\n$& ');
-    return output;
   }
 );
 
