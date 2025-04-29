@@ -4,22 +4,27 @@
 import * as React from 'react';
 import { ProgressTracker } from '@/components/progress-tracker';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added CardDescription
-import { Target, Info } from 'lucide-react'; // Added Info icon
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Target, Info, TrendingUp } from 'lucide-react'; // Added TrendingUp
 import { RecoveryPlanDialog } from '@/components/recovery-plan-dialog';
-import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Key for storing sobriety start date in local storage
+const SOBRIETY_START_DATE_KEY = 'sobrietyStartDate';
+const RECOVERY_PLAN_KEY = 'recoveryPlan'; // Use the same key as home page
+
 
 export default function ProgressPage() {
   const [sobrietyStartDate, setSobrietyStartDate] = React.useState<Date | null>(null);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
-  const [isLoadingDate, setIsLoadingDate] = React.useState(true); // Add loading state
+  const [isLoadingDate, setIsLoadingDate] = React.useState(true);
 
    // Load start date from localStorage on initial mount
    React.useEffect(() => {
     setIsLoadingDate(true);
     // Simulate loading delay for visual feedback if needed
     // await new Promise(resolve => setTimeout(resolve, 300));
-    const storedDate = localStorage.getItem('sobrietyStartDate');
+    const storedDate = localStorage.getItem(SOBRIETY_START_DATE_KEY);
     if (storedDate) {
       setSobrietyStartDate(new Date(storedDate));
     } else {
@@ -28,12 +33,13 @@ export default function ProgressPage() {
     setIsLoadingDate(false); // Set loading to false after checking localStorage
   }, []);
 
-  // Handler for plan generation
+  // Handler for plan generation (sets start date and saves plan - similar to home)
   const handlePlanGenerated = (plan: string) => {
     console.log("Recovery Plan generated on Progress page.");
      const startDate = new Date(); // Set start date upon plan generation
      setSobrietyStartDate(startDate);
-     localStorage.setItem('sobrietyStartDate', startDate.toISOString()); // Save to localStorage
+     localStorage.setItem(SOBRIETY_START_DATE_KEY, startDate.toISOString()); // Save to localStorage
+     localStorage.setItem(RECOVERY_PLAN_KEY, plan); // Save plan too
      setIsFormOpen(false); // Close dialog
   };
 
@@ -41,11 +47,11 @@ export default function ProgressPage() {
   return (
     <main className="container mx-auto flex flex-col items-center p-6 md:p-12">
       <header className="mb-12 text-center">
-        <h1 className="mb-2 text-4xl font-bold text-primary">
-          Your Progress Dashboard
+        <h1 className="mb-2 text-4xl font-bold text-primary flex items-center justify-center gap-3">
+            <TrendingUp className="h-8 w-8" /> Your Progress Dashboard
         </h1>
         <p className="text-lg text-muted-foreground">
-          Track your journey, celebrate milestones, and find inspiration.
+          Track your journey, celebrate milestones, and view your progress.
         </p>
       </header>
 
@@ -88,7 +94,7 @@ export default function ProgressPage() {
         </div>
 
 
-        {/* Dialog for Recovery Plan Form (Conditionally rendered) */}
+        {/* Dialog for Recovery Plan Form (Conditionally rendered if no start date) */}
         {!sobrietyStartDate && (
             <RecoveryPlanDialog
                 isOpen={isFormOpen}
