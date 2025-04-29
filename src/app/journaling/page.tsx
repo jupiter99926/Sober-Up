@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { PlusCircle, Search, Calendar } from 'lucide-react';
+import { PlusCircle, Search, Calendar, NotebookPen } from 'lucide-react'; // Import NotebookPen
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { JournalEntryForm } from '@/components/journal/journal-entry-form';

@@ -5,7 +5,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CalendarIcon, Loader2, Smile, Meh, Frown, Tag, Bold, Italic, List, Image as ImageIcon, Mic } from 'lucide-react';
+import { CalendarIcon, Loader2, Smile, Meh, Frown, Tag, Bold, Italic, List, Image as ImageIcon, Mic, X } from 'lucide-react'; // Import X
 import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
