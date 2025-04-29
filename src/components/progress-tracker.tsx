@@ -260,7 +260,12 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
                     <Users className="h-4 w-4"/> Community Rank
                 </CardDescription>
                 <CardTitle className="text-lg font-medium text-foreground">Daily Points Leaderboard</CardTitle>
-                <p className="text-xs text-muted-foreground pt-1">Your Points: <span className="font-semibold text-primary">{loading ? <Skeleton className="inline-block h-3 w-8" /> : userPoints}</span> (1 point per sober day)</p>
+                {/* Changed p to div to fix hydration error */}
+                <div className="text-xs text-muted-foreground pt-1">
+                    Your Points: <span className="font-semibold text-primary">
+                    {loading ? <Skeleton className="inline-block h-3 w-8" /> : userPoints}
+                    </span> (1 point per sober day)
+                </div>
             </CardHeader>
             <CardContent>
                 {loading ? (
@@ -362,4 +367,3 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
     </div>
   );
 }
-
