@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added CardHeader, CardTitle, CardDescription
 import { UserPlus, Trash2, PhoneCall } from 'lucide-react'; // Icons for actions
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
