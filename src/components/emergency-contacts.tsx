@@ -3,17 +3,56 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added CardHeader, CardTitle, CardDescription
-import { UserPlus, Trash2, PhoneCall } from 'lucide-react'; // Icons for actions
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { UserPlus, Trash2, PhoneCall, Globe } from 'lucide-react'; // Added Globe icon
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Select components
 
 interface Contact {
   id: string;
   name: string;
   phone: string;
 }
+
+interface CountryHelpline {
+    countryCode: string;
+    countryName: string;
+    addictionHelpline?: { name: string; number: string; url?: string }; // General mental health/addiction helpline
+    crisisHelpline: { name: string; number: string; url?: string }; // Suicide/Crisis helpline
+}
+
+// Disclaimer: Helpline numbers are examples and require verification for production use.
+// Finding exact SAMHSA equivalents globally is difficult. Focus is on crisis lines and general support.
+const countryHelplines: CountryHelpline[] = [
+  {
+    countryCode: 'US',
+    countryName: 'United States',
+    addictionHelpline: { name: 'SAMHSA National Helpline', number: '1-800-662-HELP (4357)', url: 'https://www.samhsa.gov/find-help/national-helpline' },
+    crisisHelpline: { name: '988 Suicide & Crisis Lifeline', number: 'Call or Text 988', url: 'https://988lifeline.org/' },
+  },
+  {
+    countryCode: 'CA',
+    countryName: 'Canada',
+    addictionHelpline: { name: 'Wellness Together Canada', number: '1-866-585-0445 or Text WELLNESS to 741741', url: 'https://www.wellnesstogether.ca/' }, // General mental wellness/substance use portal
+    crisisHelpline: { name: 'Talk Suicide Canada', number: '1-833-456-4566', url: 'https://talksuicide.ca/' },
+  },
+  {
+    countryCode: 'GB',
+    countryName: 'United Kingdom',
+    addictionHelpline: { name: 'FRANK (National Drugs Helpline)', number: '0300 123 6600 or Text 82111', url: 'https://www.talktofrank.com/' },
+    crisisHelpline: { name: 'Samaritans', number: '116 123', url: 'https://www.samaritans.org/' },
+  },
+   {
+    countryCode: 'AU',
+    countryName: 'Australia',
+    addictionHelpline: { name: 'National Alcohol and Other Drug Hotline', number: '1800 250 015', url: 'https://www.health.gov.au/contacts/national-alcohol-and-other-drug-hotline' },
+    crisisHelpline: { name: 'Lifeline Australia', number: '13 11 14', url: 'https://www.lifeline.org.au/' },
+  },
+  // Add more countries as needed
+];
+
 
 const CONTACTS_STORAGE_KEY = 'emergencyContacts';
 
@@ -22,6 +61,7 @@ export function EmergencyContacts() {
   const [newContactName, setNewContactName] = React.useState('');
   const [newContactPhone, setNewContactPhone] = React.useState('');
   const [isAdding, setIsAdding] = React.useState(false);
+  const [selectedCountry, setSelectedCountry] = React.useState<string>('US'); // Default to US
   const { toast } = useToast();
 
   // Load contacts from local storage on mount
@@ -30,6 +70,7 @@ export function EmergencyContacts() {
     if (storedContacts) {
       setContacts(JSON.parse(storedContacts));
     }
+    // Could also store/retrieve selected country if desired
   }, []);
 
   // Save contacts to local storage whenever they change
@@ -79,6 +120,8 @@ export function EmergencyContacts() {
     });
   };
 
+  const currentHelplines = countryHelplines.find(h => h.countryCode === selectedCountry);
+
   return (
     <div className="space-y-4">
       {/* Add Contact Form (conditional) */}
@@ -104,74 +147,122 @@ export function EmergencyContacts() {
         </Card>
       ) : (
         <Button variant="outline" className="w-full" onClick={() => setIsAdding(true)}>
-          <UserPlus className="mr-2 h-4 w-4" /> Add New Contact
+          <UserPlus className="mr-2 h-4 w-4" /> Add Personal Contact
         </Button>
       )}
 
 
-      {/* List of Contacts */}
+      {/* List of Personal Contacts */}
+      {contacts.length > 0 && (
+         <div className="space-y-2 pt-2">
+             <p className="text-xs font-medium text-muted-foreground px-1">Your Personal Contacts:</p>
+            {contacts.map((contact) => (
+            <Card key={contact.id} className="bg-card">
+                <CardContent className="p-3 flex items-center justify-between gap-2">
+                <div>
+                    <p className="font-medium text-sm text-card-foreground">{contact.name}</p>
+                    <a href={`tel:${contact.phone}`} className="text-xs text-primary hover:underline flex items-center gap-1">
+                    <PhoneCall className="h-3 w-3" /> {contact.phone}
+                    </a>
+                </div>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 h-8 w-8">
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete {contact.name}</span>
+                    </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                        This action cannot be undone. This will permanently remove {contact.name} from your personal contacts.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                        onClick={() => handleDeleteContact(contact.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90" // Destructive variant styling
+                        >
+                        Delete Contact
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+                </CardContent>
+            </Card>
+            ))}
+         </div>
+      )}
       {contacts.length === 0 && !isAdding && (
         <p className="text-sm text-muted-foreground text-center py-4">
-          Your emergency contact list is empty. Add trusted people you can reach out to for support.
+          Your personal contact list is empty. Add trusted people you can reach out to for support.
         </p>
       )}
 
-      {contacts.map((contact) => (
-        <Card key={contact.id} className="bg-card">
-          <CardContent className="p-3 flex items-center justify-between gap-2">
-            <div>
-              <p className="font-medium text-sm text-card-foreground">{contact.name}</p>
-              <a href={`tel:${contact.phone}`} className="text-xs text-primary hover:underline flex items-center gap-1">
-                 <PhoneCall className="h-3 w-3" /> {contact.phone}
-              </a>
-            </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                 <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 h-8 w-8">
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete {contact.name}</span>
-                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently remove {contact.name} from your emergency contacts.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                     onClick={() => handleDeleteContact(contact.id)}
-                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90" // Destructive variant styling
-                    >
-                    Delete Contact
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </CardContent>
-        </Card>
-      ))}
-
-       {/* Static Important Helplines */}
+       {/* National Helplines */}
        <Card className="mt-6 border-primary/50 bg-primary/5">
-            <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-primary">National Helplines</CardTitle>
-                <CardDescription className="text-xs">Always available resources for immediate support.</CardDescription>
+            <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold text-primary flex items-center gap-2">
+                   <Globe className="h-4 w-4"/> National Helplines
+                </CardTitle>
+                <CardDescription className="text-xs">Select your country to find relevant support resources.</CardDescription>
+                 {/* Country Selector */}
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                    <SelectTrigger className="w-full mt-2 h-9 text-xs">
+                        <SelectValue placeholder="Select Country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {countryHelplines.map((country) => (
+                        <SelectItem key={country.countryCode} value={country.countryCode} className="text-xs">
+                            {country.countryName}
+                        </SelectItem>
+                        ))}
+                         <SelectItem value="other" disabled className="text-xs">More countries coming soon...</SelectItem>
+                    </SelectContent>
+                </Select>
             </CardHeader>
-            <CardContent className="space-y-2 text-xs">
-                <div className="flex justify-between items-center">
-                    <span>SAMHSA National Helpline:</span>
-                    <a href="tel:1-800-662-HELP" className="font-medium text-primary hover:underline">1-800-662-HELP (4357)</a>
-                </div>
-                 <div className="flex justify-between items-center">
-                    <span>988 Suicide & Crisis Lifeline:</span>
-                    <a href="tel:988" className="font-medium text-primary hover:underline">Call or Text 988</a>
-                </div>
-                 {/* Add more relevant helplines */}
+            <CardContent className="space-y-2 text-xs pt-0">
+                 {currentHelplines ? (
+                    <>
+                        {currentHelplines.addictionHelpline && (
+                            <div className="flex flex-col sm:flex-row justify-between sm:items-center">
+                                <span className="font-medium text-primary/90">{currentHelplines.addictionHelpline.name}:</span>
+                                <a
+                                    href={currentHelplines.addictionHelpline.url || `tel:${currentHelplines.addictionHelpline.number.replace(/[^\d+]/g, '')}`} // Create tel link from number
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-medium text-primary hover:underline"
+                                >
+                                    {currentHelplines.addictionHelpline.number}
+                                </a>
+                            </div>
+                        )}
+                         <div className="flex flex-col sm:flex-row justify-between sm:items-center">
+                            <span className="font-medium text-primary/90">{currentHelplines.crisisHelpline.name}:</span>
+                             <a
+                                href={currentHelplines.crisisHelpline.url || `tel:${currentHelplines.crisisHelpline.number.replace(/[^\d+]/g, '')}`} // Create tel link from number
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-medium text-primary hover:underline"
+                            >
+                                {currentHelplines.crisisHelpline.number}
+                            </a>
+                         </div>
+                         <p className="text-xs text-muted-foreground pt-2 italic">
+                             Helpline information is for {currentHelplines.countryName}. Please verify numbers before calling.
+                         </p>
+                    </>
+                ) : (
+                     <p className="text-xs text-muted-foreground text-center py-2">
+                         Please select a country to view national helplines.
+                     </p>
+                 )}
             </CardContent>
        </Card>
     </div>
   );
 }
+
+    
