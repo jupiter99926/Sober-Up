@@ -13,7 +13,7 @@ export function DistractionGames() {
       name: 'Simple Web Puzzle',
       description: 'Engage your mind with a quick puzzle game.',
       icon: <Puzzle className="h-5 w-5 text-green-500" />,
-      action: () => window.open('https://www.google.com/search?q=simple+online+puzzle+games', '_blank'), // Example link
+      action: () => window.open('https://www.google.com/search?q=simple+online+puzzle+games', '_blank'), // Updated link to search results
     },
     {
       id: 'music',
