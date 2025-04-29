@@ -4,18 +4,10 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Puzzle, Headphones } from 'lucide-react'; // Removed Wind icon
+import { Puzzle, Headphones } from 'lucide-react'; // Keep Headphones icon
 
 export function DistractionGames() {
   const games = [
-    // Removed Box Breathing Exercise entry
-    // {
-    //   id: 'breathing',
-    //   name: 'Box Breathing Exercise',
-    //   description: 'Calm your nervous system. Inhale for 4s, hold for 4s, exhale for 4s, hold for 4s. Repeat.',
-    //   icon: <Wind className="h-5 w-5 text-blue-500" />,
-    //   action: () => alert('Practice Box Breathing: Inhale (4s) -> Hold (4s) -> Exhale (4s) -> Hold (4s). Repeat 5-10 times.'),
-    // },
     {
       id: 'web-game',
       name: 'Simple Web Puzzle',
@@ -25,10 +17,10 @@ export function DistractionGames() {
     },
     {
       id: 'music',
-      name: 'Listen to Calming Sounds',
-      description: 'Put on some soothing music, nature sounds (like rain or waves), or ambient tracks.', // Updated description
+      name: 'Listen to Calming Sounds on Spotify', // Updated name slightly
+      description: 'Put on some soothing music, nature sounds (like rain or waves), or ambient tracks.', // Kept description general
       icon: <Headphones className="h-5 w-5 text-purple-500" />,
-      action: () => window.open('https://www.youtube.com/results?search_query=calming+music+nature+sounds+ambient', '_blank'), // Updated search query slightly
+      action: () => window.open('https://open.spotify.com/search/calming%20music%20nature%20sounds%20ambient', '_blank'), // Updated link to Spotify search
     },
     // Add more game/tool ideas here
   ];
@@ -67,3 +59,4 @@ export function DistractionGames() {
     </div>
   );
 }
+
