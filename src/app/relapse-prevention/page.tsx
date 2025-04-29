@@ -26,7 +26,7 @@ export default function RelapsePreventionPage() {
         <Card className="shadow-lg md:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-accent">
-              <Brain className="h-5 w-5" /> 3-Month Meditation Plan
+              <Brain className="h-5 w-5" /> 6-Month Meditation Plan
             </CardTitle>
             <CardDescription>
               Cultivate mindfulness and manage stress with guided practices.
@@ -85,3 +85,4 @@ export default function RelapsePreventionPage() {
     </main>
   );
 }
+
