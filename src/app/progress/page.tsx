@@ -60,12 +60,12 @@ export default function ProgressPage() {
          {isLoadingDate ? (
             // Show skeleton loaders while checking for the start date
              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Skeleton className="h-40 w-full" />
-                <Skeleton className="h-40 w-full" />
-                <Skeleton className="h-40 w-full" />
-                <Skeleton className="h-40 w-full md:col-span-2 lg:col-span-1" />
-                <Skeleton className="h-40 w-full" />
-                <Skeleton className="h-40 w-full" />
+                <Skeleton className="h-40 w-full rounded-lg" /> {/* Added rounded-lg */}
+                <Skeleton className="h-40 w-full rounded-lg" />
+                <Skeleton className="h-40 w-full rounded-lg" />
+                <Skeleton className="h-40 w-full md:col-span-2 lg:col-span-1 rounded-lg" />
+                <Skeleton className="h-40 w-full rounded-lg" />
+                <Skeleton className="h-40 w-full rounded-lg" />
             </div>
 
          ) : sobrietyStartDate ? (
@@ -74,7 +74,7 @@ export default function ProgressPage() {
          ) : (
             // If no date, show the prompt card (center it or span columns)
             <div className="col-span-full flex justify-center"> {/* Center the card */}
-                <Card className="w-full max-w-lg text-center shadow-lg border-accent bg-accent/5">
+                <Card className="w-full max-w-lg text-center shadow-lg border-accent bg-accent/5 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
                     <CardHeader>
                     <CardTitle className="flex items-center justify-center gap-2 text-accent">
                         <Info className="h-5 w-5"/> Start Your Recovery Journey

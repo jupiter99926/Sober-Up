@@ -36,7 +36,7 @@ export function JournalEntryList({ entries, onEdit, onDelete }: JournalEntryList
     <ScrollArea className="h-full"> {/* Make the list scrollable */}
       <div className="space-y-4 pr-4 pb-4">
         {entries.map((entry) => (
-          <Card key={entry.id} className="shadow-sm hover:shadow-md transition-shadow duration-200 bg-card">
+          <Card key={entry.id} className="shadow-sm hover:shadow-lg transition-shadow duration-200 bg-card"> {/* Increased hover shadow */}
             <CardHeader className="flex flex-row justify-between items-start pb-3">
               <div>
                 <CardTitle className="text-lg font-semibold text-card-foreground">
@@ -48,11 +48,11 @@ export function JournalEntryList({ entries, onEdit, onDelete }: JournalEntryList
                 </CardDescription>
               </div>
               <div className="flex gap-1">
-                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(entry)}>
+                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => onEdit(entry)}> {/* Made button round */}
                   <Edit className="h-4 w-4" />
                   <span className="sr-only">Edit Entry</span>
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => onDelete(entry.id)}>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-full" onClick={() => onDelete(entry.id)}> {/* Made button round */}
                   <Trash2 className="h-4 w-4" />
                    <span className="sr-only">Delete Entry</span>
                 </Button>

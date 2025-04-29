@@ -277,7 +277,7 @@ export default function Home() {
 
       {/* Get Started / Pledge & Habits Section */}
       {showGetStarted ? (
-         <Card className="w-full max-w-lg text-center shadow-lg border-accent bg-accent/5">
+         <Card className="w-full max-w-lg text-center shadow-lg border-accent bg-accent/5 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
             <CardHeader>
             <CardTitle className="flex items-center justify-center gap-2 text-accent">
                 <Target className="h-5 w-5"/> Start Your Recovery Journey
@@ -295,7 +295,7 @@ export default function Home() {
       ) : (
          <div className="w-full max-w-2xl space-y-8">
              {/* Today's Pledge Button */}
-             <Card className="w-full text-center shadow-md overflow-hidden">
+             <Card className="w-full text-center shadow-md overflow-hidden transition-shadow hover:shadow-lg"> {/* Added hover effect */}
                 <CardContent className="p-6">
                     {pledgedToday ? (
                          <div className="space-y-2">
@@ -312,7 +312,7 @@ export default function Home() {
              </Card>
 
             {/* Challenge Section */}
-            <Card className="w-full shadow-md">
+            <Card className="w-full shadow-md transition-shadow hover:shadow-lg"> {/* Added hover effect */}
                 <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Challenge</CardTitle>
                 </CardHeader>
@@ -320,7 +320,7 @@ export default function Home() {
                     <Trophy className="h-10 w-10 text-orange-400 shrink-0"/>
                     <div className="flex-grow">
                         <p className="font-medium">Pledge for seven days</p>
-                         <Progress value={challengeProgress} aria-label={`${pledgeStreak} out of 7 days pledged`} className="h-2 my-1.5 bg-green-100 [&>div]:bg-green-500" />
+                         <Progress value={challengeProgress} aria-label={`${pledgeStreak} out of 7 days pledged`} className="h-2 my-1.5 bg-green-100 [&>div]:bg-green-500 rounded-full" /> {/* Added rounded-full */}
                         <p className="text-xs text-muted-foreground">
                             {daysLeftForChallenge > 0
                                 ? `You're ${daysLeftForChallenge} pledge${daysLeftForChallenge > 1 ? 's' : ''} away from unlocking the pack!`
@@ -331,7 +331,7 @@ export default function Home() {
             </Card>
 
              {/* Workbook Section */}
-            <Card className="w-full shadow-md">
+            <Card className="w-full shadow-md transition-shadow hover:shadow-lg"> {/* Added hover effect */}
                 <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Workbook</CardTitle>
                      <CardDescription className="text-sm text-muted-foreground">
@@ -355,7 +355,7 @@ export default function Home() {
                                 <Button
                                     variant={item.completed ? "outline" : "ghost"}
                                     size="icon"
-                                    className={`h-8 w-8 shrink-0 ${item.completed ? 'border-green-500 text-green-500' : ''}`}
+                                    className={`h-8 w-8 shrink-0 rounded-full ${item.completed ? 'border-green-500 text-green-500' : ''}`} // Made button round
                                     onClick={() => handleToggleWorkbookItem(item.id)}
                                     aria-label={item.completed ? 'Mark as incomplete' : 'Mark as complete'}
                                 >
@@ -376,7 +376,7 @@ export default function Home() {
          {/* Column 1: Motivation & Goals */}
          <div className="space-y-8 lg:col-span-1">
              {/* Motivation Section */}
-            <Card className="shadow-lg">
+            <Card className="shadow-lg transition-shadow hover:shadow-xl"> {/* Added hover effect */}
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg font-medium text-secondary-foreground">
                         <Heart className="h-5 w-5 text-secondary" /> Why I'm Doing This
@@ -392,17 +392,17 @@ export default function Home() {
                                         src={m.content}
                                         alt="Motivation"
                                         width={150} height={150} // Specify dimensions
-                                        className="rounded-lg object-cover w-full h-full"
+                                        className="rounded-lg object-cover w-full h-full transition-transform group-hover:scale-105" // Added hover scale
                                     />
                                 ) : (
-                                    <div className={`flex items-center justify-center p-3 rounded-lg h-full text-center text-sm font-medium ${ m.content.toLowerCase().includes('hangover') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                                    <div className={`flex items-center justify-center p-3 rounded-lg h-full text-center text-sm font-medium transition-colors ${ m.content.toLowerCase().includes('hangover') ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}`}> {/* Added hover bg */}
                                         {m.content}
                                     </div>
                                 )}
                                  {/* Remove Button Overlay */}
                                  <Button
                                      variant="destructive" size="icon"
-                                     className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                     className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10 rounded-full" // Made button round
                                      onClick={() => handleRemoveMotivation(m.id)}
                                      aria-label="Remove motivation"
                                  >
@@ -430,7 +430,7 @@ export default function Home() {
             </Card>
 
              {/* Goals Section */}
-            <Card className="shadow-lg">
+            <Card className="shadow-lg transition-shadow hover:shadow-xl"> {/* Added hover effect */}
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg font-medium text-accent-foreground">
                         <Goal className="h-5 w-5 text-accent"/> My Goals
@@ -444,7 +444,7 @@ export default function Home() {
                     {goals.map(goal => (
                         <div key={goal.id} className="flex items-center justify-between group p-2 rounded hover:bg-muted/50">
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" className={`h-6 w-6 ${goal.completed ? 'text-green-500' : 'text-muted-foreground'}`} onClick={() => handleToggleGoal(goal.id)}>
+                                <Button variant="ghost" size="icon" className={`h-6 w-6 rounded-full ${goal.completed ? 'text-green-500' : 'text-muted-foreground'}`} onClick={() => handleToggleGoal(goal.id)}> {/* Made button round */}
                                     <CheckSquare className="h-4 w-4"/>
                                 </Button>
                                 <span className={`text-sm ${goal.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
@@ -453,7 +453,7 @@ export default function Home() {
                             </div>
                              <Button
                                  variant="ghost" size="icon"
-                                 className="h-6 w-6 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                 className="h-6 w-6 text-destructive opacity-0 group-hover:opacity-100 transition-opacity rounded-full" // Made button round
                                  onClick={() => handleRemoveGoal(goal.id)}
                                  aria-label="Remove goal"
                             >
@@ -475,7 +475,7 @@ export default function Home() {
 
              {/* Streaks (Simple Display) */}
              {sobrietyStartDate && (
-                 <Card className="shadow-lg bg-yellow-50 border-yellow-200">
+                 <Card className="shadow-lg bg-yellow-50 border-yellow-200 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
                     <CardHeader className="pb-2">
                         <CardTitle className="flex items-center gap-2 text-lg font-medium text-yellow-700">
                             <Flame className="h-5 w-5"/> Sobriety Streak
@@ -492,7 +492,7 @@ export default function Home() {
         {/* Column 2 & 3: Recovery Plan */}
         {recoveryPlan && !showGetStarted && (
             <div className="lg:col-span-2">
-                <Card className="shadow-lg bg-secondary/10 border-secondary sticky top-12">
+                <Card className="shadow-lg bg-secondary/10 border-secondary sticky top-12 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-lg font-medium text-secondary-foreground">
                         Your AI Recovery Plan
@@ -500,24 +500,22 @@ export default function Home() {
                          <Button variant="outline" size="sm" onClick={() => setIsFormOpen(true)} className="text-xs h-7">Regenerate Plan</Button> {/* Add Regenerate button */}
                     </CardHeader>
                     <CardContent>
-                         <div className="prose prose-sm max-w-none text-secondary-foreground whitespace-pre-wrap max-h-[70vh] overflow-y-auto">
+                         {/* Use prose-sm for smaller text in cards, adjust max-w */}
+                         <div className="prose prose-sm max-w-none text-secondary-foreground/90 whitespace-pre-wrap max-h-[70vh] overflow-y-auto p-2"> {/* Adjusted prose styles and padding */}
                             {/* Improved Markdown Rendering */}
                             {recoveryPlan.split('\n').map((line, index) => {
                                 const trimmedLine = line.trim();
-                                if (trimmedLine.startsWith('## ')) {
+                                // Check for list items first
+                                if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
+                                    return <li key={index} className="ml-4">{trimmedLine.substring(2)}</li>;
+                                } else if (/^\d+\.\s/.test(trimmedLine)) {
+                                    return <li key={index} className="ml-4">{trimmedLine.substring(trimmedLine.indexOf('.') + 1).trim()}</li>;
+                                } else if (trimmedLine.startsWith('## ')) {
                                     return <h2 key={index}>{trimmedLine.substring(3)}</h2>;
                                 } else if (trimmedLine.startsWith('# ')) {
                                      return <h1 key={index}>{trimmedLine.substring(2)}</h1>;
-                                } else if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
-                                    // Basic list item handling - assumes simple lists
-                                    const isSublist = line.match(/^\s{2,}\*/); // Check for indentation
-                                    const style = isSublist ? { marginLeft: '1.5em' } : {};
-                                    return <li key={index} style={style}>{trimmedLine.substring(trimmedLine.indexOf('*') + 1).trim()}</li>;
-                                } else if (/^\d+\.\s/.test(trimmedLine)) {
-                                     // Handle numbered lists better if needed, this is basic
-                                      return <li key={index} style={{ listStyleType: 'decimal', marginLeft: '1.5em' }}>{trimmedLine.substring(trimmedLine.indexOf('.') + 1).trim()}</li>;
                                 } else if (trimmedLine === '') {
-                                    // Try to preserve paragraphs more accurately
+                                    // Render a break for empty lines between paragraphs
                                     return index > 0 && recoveryPlan.split('\n')[index - 1].trim() !== '' ? <br key={index} /> : null;
                                 } else {
                                     // Render as paragraph if it's not empty and not a heading/list item

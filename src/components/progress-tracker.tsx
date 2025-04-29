@@ -120,7 +120,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
         {/* Column 1: Core Stats & Milestones */}
         <div className="space-y-6 lg:col-span-1">
           {/* Sobriety Clock */}
-          <Card className="bg-primary/10 border-primary shadow-md">
+          <Card className="bg-primary/10 border-primary shadow-md transition-shadow hover:shadow-lg"> {/* Added hover effect */}
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2 text-sm text-primary font-medium">
                 <CalendarDays className="h-4 w-4" /> Time Sober
@@ -136,7 +136,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
 
           {/* Next Milestone Progress */}
           {nextMilestone ? (
-            <Card className="shadow-sm">
+            <Card className="shadow-sm transition-shadow hover:shadow-md"> {/* Added hover effect */}
               <CardHeader className="pb-2">
                 <CardDescription className="flex items-center gap-2 text-sm text-accent font-medium">
                   <BarChart className="h-4 w-4" /> Next Milestone Target
@@ -147,14 +147,14 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Progress value={nextMilestone.progress} aria-label={`${Math.round(nextMilestone.progress)}% towards ${nextMilestone.name}`} className="h-3 mb-1.5 bg-accent/20 [&>div]:bg-accent" />
+                <Progress value={nextMilestone.progress} aria-label={`${Math.round(nextMilestone.progress)}% towards ${nextMilestone.name}`} className="h-3 mb-1.5 bg-accent/20 [&>div]:bg-accent rounded-full" /> {/* Added rounded-full */}
                 <p className="text-xs text-muted-foreground">
                   {`${days} / ${nextMilestone.daysNeeded} days toward "${nextMilestone.reward}"`}
                 </p>
               </CardContent>
             </Card>
            ) : (
-             <Card className="shadow-sm"><CardContent className="pt-6 text-center text-sm text-muted-foreground">You've achieved all current milestones!</CardContent></Card>
+             <Card className="shadow-sm transition-shadow hover:shadow-md"><CardContent className="pt-6 text-center text-sm text-muted-foreground">You've achieved all current milestones!</CardContent></Card>
           )}
 
         </div>
@@ -163,7 +163,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
         <div className="space-y-6 lg:col-span-1">
 
             {/* Estimated Money Saved */}
-            <Card className="shadow-sm">
+            <Card className="shadow-sm transition-shadow hover:shadow-md"> {/* Added hover effect */}
                 <CardHeader className="pb-2">
                     <CardDescription className="flex items-center gap-2 text-sm text-green-600 font-medium">
                         <DollarSign className="h-4 w-4" /> Estimated Money Saved
@@ -178,7 +178,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
             </Card>
 
             {/* Earned Milestones/Badges */}
-           <Card className="shadow-sm">
+           <Card className="shadow-sm transition-shadow hover:shadow-md"> {/* Added hover effect */}
             <CardHeader className="pb-2">
                 <CardDescription className="flex items-center gap-2 text-sm text-secondary-foreground font-medium">
                 <Award className="h-4 w-4" /> Milestones Achieved
@@ -209,7 +209,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
         <div className="space-y-6 lg:col-span-1">
 
             {/* Health Improvements (Can be dynamic based on days/substance) */}
-            <Card className="bg-blue-50 border-blue-200 shadow-sm">
+            <Card className="bg-blue-50 border-blue-200 shadow-sm transition-shadow hover:shadow-md"> {/* Added hover effect */}
                 <CardHeader className="pb-2">
                 <CardDescription className="flex items-center gap-2 text-sm text-blue-600 font-medium">
                     <HeartPulse className="h-4 w-4" /> Potential Health Benefits
@@ -232,7 +232,7 @@ export function ProgressTracker({ sobrietyStartDate }: ProgressTrackerProps) {
             </Card>
 
             {/* Placeholder for Substance Specific Tracking */}
-             <Card className="shadow-sm">
+             <Card className="shadow-sm transition-shadow hover:shadow-md"> {/* Added hover effect */}
                 <CardHeader className="pb-2">
                     <CardDescription className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
                         <Brain className="h-4 w-4"/> Substance Tracking

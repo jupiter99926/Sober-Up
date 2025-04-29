@@ -63,10 +63,10 @@ export default {
   			}
   		},
   		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		},
+            lg: 'var(--radius)', // Use the theme variable
+            md: 'calc(var(--radius) - 4px)', // Adjust medium based on theme variable
+            sm: 'calc(var(--radius) - 8px)', // Adjust small based on theme variable
+        },
   		keyframes: {
   			'accordion-down': {
   				from: {

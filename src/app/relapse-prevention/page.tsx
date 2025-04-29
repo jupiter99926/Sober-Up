@@ -26,7 +26,7 @@ export default function RelapsePreventionPage() {
       <div className="grid w-full max-w-6xl gap-8 md:grid-cols-1 lg:grid-cols-2">
 
          {/* Box Breathing Plan Section (New) */}
-        <Card className="shadow-lg lg:col-span-1">
+        <Card className="shadow-lg lg:col-span-1 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
               <Wind className="h-5 w-5" /> 4-Week Box Breathing Plan
@@ -42,7 +42,7 @@ export default function RelapsePreventionPage() {
 
 
         {/* Meditation Plan Section */}
-        <Card className="shadow-lg lg:col-span-1">
+        <Card className="shadow-lg lg:col-span-1 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-accent">
               <Brain className="h-5 w-5" /> 6-Month Meditation Plan
@@ -57,7 +57,7 @@ export default function RelapsePreventionPage() {
         </Card>
 
         {/* Distraction Games Section */}
-        <Card className="shadow-lg lg:col-span-1">
+        <Card className="shadow-lg lg:col-span-1 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-secondary">
               <Gamepad2 className="h-5 w-5" /> Distraction Tools & Games
@@ -72,7 +72,7 @@ export default function RelapsePreventionPage() {
         </Card>
 
         {/* Emergency Contacts Section */}
-        <Card className="shadow-lg lg:col-span-1">
+        <Card className="shadow-lg lg:col-span-1 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <Phone className="h-5 w-5" /> Emergency Contacts
@@ -87,7 +87,7 @@ export default function RelapsePreventionPage() {
         </Card>
 
         {/* Post-Relapse Guidance Section (Spanning full width on large screens) */}
-        <Card className="shadow-lg bg-primary/10 border-primary lg:col-span-2">
+        <Card className="shadow-lg bg-primary/10 border-primary lg:col-span-2 transition-shadow hover:shadow-xl"> {/* Added hover effect */}
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
               <HeartHandshake className="h-5 w-5" /> Post-Relapse Guidance

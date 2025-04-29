@@ -254,13 +254,13 @@ export default function CommunityPage() {
 
         {/* Placeholder Content for Tabs */}
         <TabsContent value="communities" className="flex-1 overflow-y-auto"> {/* Flex-1 and overflow */}
-            <Card>
+            <Card className="transition-shadow hover:shadow-md"> {/* Added hover effect */}
                 <CardHeader><CardTitle>Discover Communities</CardTitle></CardHeader>
                 <CardContent><p className="text-muted-foreground">Find and join communities focused on specific recovery paths or interests. (Coming Soon)</p></CardContent>
             </Card>
         </TabsContent>
         <TabsContent value="following" className="flex-1 overflow-y-auto"> {/* Flex-1 and overflow */}
-             <Card>
+             <Card className="transition-shadow hover:shadow-md"> {/* Added hover effect */}
                 <CardHeader><CardTitle>Following Feed</CardTitle></CardHeader>
                 <CardContent><p className="text-muted-foreground">See the latest updates and posts from users you follow across different communities. (Coming Soon)</p></CardContent>
             </Card>
@@ -268,7 +268,7 @@ export default function CommunityPage() {
 
         {/* Group Content (SoberTown Example) */}
         <TabsContent value="groups" className="flex-1 flex flex-col overflow-hidden"> {/* Flex-1 and overflow */}
-          <Card className="shadow-lg h-full flex flex-col">
+          <Card className="shadow-lg h-full flex flex-col transition-shadow hover:shadow-xl"> {/* Added hover effect */}
             <CardHeader className="border-b">
                <div className="flex items-center justify-between">
                    <CardTitle className="text-xl font-semibold flex items-center gap-2">
@@ -295,7 +295,7 @@ export default function CommunityPage() {
 
                     {/* Create Post Section (Only if joined) */}
                     {isJoined && (
-                        <Card className="mb-4 shadow">
+                        <Card className="mb-4 shadow transition-shadow hover:shadow-md"> {/* Added hover effect */}
                             <CardHeader className="p-3">
                                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                                     <Pencil className="w-4 h-4"/> Share something with the group...
@@ -317,7 +317,7 @@ export default function CommunityPage() {
                         </Card>
                     )}
                     {!isJoined && (
-                         <Card className="mb-4 shadow bg-muted/50 text-center">
+                         <Card className="mb-4 shadow bg-muted/50 text-center transition-shadow hover:shadow-md"> {/* Added hover effect */}
                              <CardContent className="p-4 text-sm text-muted-foreground">
                                  Join the group to post and comment.
                              </CardContent>
@@ -326,7 +326,7 @@ export default function CommunityPage() {
 
                     {/* Feed Items */}
                     {feedItems.map((item) => (
-                        <Card key={item.id} className="bg-card shadow-sm">
+                        <Card key={item.id} className="bg-card shadow-sm transition-shadow hover:shadow-md"> {/* Added hover effect */}
                             <CardHeader className="flex flex-row items-start justify-between pb-2 space-x-4">
                                <div className="flex items-center gap-3">
                                    {/* Avatar */}
@@ -350,7 +350,7 @@ export default function CommunityPage() {
                                 )}
 
                                 {item.type === 'pledge' && item.pledgedMembers && (
-                                    <div className="space-y-3 bg-muted/50 p-3 rounded-md border">
+                                    <div className="space-y-3 bg-muted/50 p-3 rounded-lg border"> {/* Increased rounding */}
                                         <p className="text-sm font-semibold flex items-center gap-2 text-indigo-600">
                                             <Handshake className="h-5 w-5" /> Daily Pledge
                                         </p>
@@ -365,12 +365,12 @@ export default function CommunityPage() {
                                         <div className="text-xs font-medium text-indigo-700">
                                             {item.pledgeProgress}% pledged <span className="text-muted-foreground font-normal">• Approaching 10 day streak!</span>
                                         </div>
-                                        <Progress value={item.pledgeProgress} className="h-1.5 bg-indigo-100 [&>div]:bg-indigo-500" aria-label={`${item.pledgeProgress}% pledged`} />
+                                        <Progress value={item.pledgeProgress} className="h-1.5 bg-indigo-100 [&>div]:bg-indigo-500 rounded-full" aria-label={`${item.pledgeProgress}% pledged`} /> {/* Added rounded-full */}
                                     </div>
                                 )}
 
                                 {item.type === 'milestone' && item.milestoneType && (
-                                   <div className="flex items-center gap-2 text-sm bg-emerald-50 p-3 rounded-md border border-emerald-200">
+                                   <div className="flex items-center gap-2 text-sm bg-emerald-50 p-3 rounded-lg border border-emerald-200"> {/* Increased rounding */}
                                         <Trophy className="h-5 w-5 text-emerald-600 shrink-0" />
                                         <div>
                                             <strong className="font-medium text-emerald-700">{item.author.name}</strong> achieved <Badge variant="secondary" className="mx-1 bg-emerald-100 text-emerald-800 border-emerald-300">{item.milestoneType}</Badge>
@@ -391,7 +391,7 @@ export default function CommunityPage() {
 
                                 {/* Existing Comments */}
                                 {item.comments.length > 0 && (
-                                    <div className="space-y-1.5 text-xs w-full mb-3 pl-2 border-l-2 ml-1">
+                                    <div className="space-y-1.5 text-xs w-full mb-3 pl-2 border-l-2 border-border ml-1"> {/* Use theme border */}
                                         {item.comments.map(comment => (
                                             <p key={comment.id}><strong className="font-medium">{comment.authorName}:</strong> {comment.text}</p>
                                         ))}
@@ -410,7 +410,7 @@ export default function CommunityPage() {
                                         <Button
                                             type="button"
                                             size="icon"
-                                            className="h-8 w-8"
+                                            className="h-8 w-8 rounded-full" // Made button round
                                             onClick={() => handleAddComment(item.id)}
                                             disabled={!commentInputs[item.id]?.trim()}
                                         >
@@ -502,7 +502,7 @@ export default function CommunityPage() {
                                 <Button
                                     type="button"
                                     size="icon"
-                                    className="h-9 w-9"
+                                    className="h-9 w-9 rounded-full" // Made button round
                                     onClick={handleSendChatMessage}
                                     disabled={!newChatMessage.trim()}
                                 >
@@ -519,7 +519,7 @@ export default function CommunityPage() {
                     <CardTitle className="text-lg mb-4">Group Members ({members.length})</CardTitle>
                     <div className="space-y-3">
                         {members.map(member => (
-                            <div key={member.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50">
+                            <div key={member.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors"> {/* Increased rounding */}
                                 <div className="flex items-center gap-3">
                                      <Avatar className="h-9 w-9">
                                         <AvatarImage src={member.avatarUrl} alt={member.name} />
@@ -553,4 +553,3 @@ export default function CommunityPage() {
     </main>
   );
 }
-

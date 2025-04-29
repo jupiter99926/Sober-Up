@@ -74,8 +74,8 @@ export function ChatSupport() {
   }
 
   return (
-    <Card className="flex h-[600px] flex-col shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="flex h-[600px] flex-col shadow-lg transition-shadow hover:shadow-xl"> {/* Added hover effect */}
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b"> {/* Added border-b */}
         <div className="space-y-1">
             <CardTitle className="text-lg font-medium">AI Chat Support</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
@@ -98,8 +98,8 @@ export function ChatSupport() {
               <div
                 key={message.id}
                 className={cn(
-                  'flex w-max max-w-[85%] flex-col gap-2 rounded-lg px-3 py-2 text-sm',
-                  message.sender === 'user' ? 'ml-auto bg-primary text-primary-foreground' : 'bg-muted'
+                  'flex w-max max-w-[85%] flex-col gap-2 rounded-lg px-3 py-2 text-sm', // Use theme rounding
+                  message.sender === 'user' ? 'ml-auto bg-primary text-primary-foreground shadow-md' : 'bg-muted shadow-sm' // Added shadows
                 )}
               >
                 {message.text.split('\n').map((line, i) => (
@@ -129,7 +129,7 @@ export function ChatSupport() {
               autoComplete="off"
               disabled={isLoading}
             />
-            <Button type="submit" size="icon" disabled={isLoading}>
+            <Button type="submit" size="icon" disabled={isLoading} className="rounded-full"> {/* Made button round */}
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
