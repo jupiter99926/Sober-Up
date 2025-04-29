@@ -1,7 +1,9 @@
+
 import type {Metadata} from 'next';
 import {Geist, Geist_Mono} from 'next/font/google';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"; // Import Toaster
+import { Toaster } from "@/components/ui/toaster";
+import { AppLayout } from '@/components/app-layout'; // Import AppLayout
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Road to Recovery', // Updated title
-  description: 'Your personalized path to overcoming addiction.', // Updated description
+  title: 'Road to Recovery',
+  description: 'Your personalized path to overcoming addiction.',
 };
 
 export default function RootLayout({
@@ -26,8 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-        <Toaster /> {/* Add Toaster component here */}
+        {/* Wrap children with AppLayout */}
+        <AppLayout>
+            {children}
+        </AppLayout>
+        <Toaster /> {/* Toaster remains outside AppLayout or inside depending on preference/structure */}
       </body>
     </html>
   );

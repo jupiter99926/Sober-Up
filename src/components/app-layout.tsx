@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquareHeart } from 'lucide-react';
+import { Home, MessageSquareHeart, TrendingUp } from 'lucide-react'; // Added TrendingUp icon
 
 import {
   Sidebar,
@@ -23,11 +23,12 @@ import { Toaster } from "@/components/ui/toaster";
 type NavItem = {
   href: string;
   label: string;
-  icon: ReactNode;
+  icon: React.ReactNode;
 };
 
 const navItems: NavItem[] = [
   { href: '/', label: 'Recovery Plan', icon: <Home /> },
+  { href: '/progress', label: 'Progress Tracking', icon: <TrendingUp /> }, // New Progress Item
   { href: '/chat-support', label: 'AI Chat Support', icon: <MessageSquareHeart /> },
 ];
 
@@ -47,17 +48,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref legacyBehavior>
-                  {/* Remove asChild: SidebarMenuButton renders its own button structure */}
-                  <SidebarMenuButton
-                    variant="ghost"
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
-                </Link>
+                 {/* Correct usage: Wrap SidebarMenuButton with Link */}
+                 <Link href={item.href} passHref legacyBehavior>
+                    <SidebarMenuButton
+                        asChild={false} // Important: asChild should be false here
+                        variant="ghost"
+                        isActive={pathname === item.href}
+                        tooltip={item.label}
+                        className="w-full justify-start" // Ensure button takes full width
+                    >
+                        {item.icon}
+                        <span className="ml-2">{item.label}</span> {/* Add margin for spacing */}
+                    </SidebarMenuButton>
+                 </Link>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -76,4 +79,3 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
-
