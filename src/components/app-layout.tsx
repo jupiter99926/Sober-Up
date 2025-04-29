@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquareHeart, TrendingUp } from 'lucide-react'; // Added TrendingUp icon
+import { Home, MessageSquareHeart, TrendingUp, ShieldCheck } from 'lucide-react'; // Added ShieldCheck icon
 
 import {
   Sidebar,
@@ -28,8 +28,9 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { href: '/', label: 'Recovery Plan', icon: <Home /> },
-  { href: '/progress', label: 'Progress Tracking', icon: <TrendingUp /> }, // New Progress Item
+  { href: '/progress', label: 'Progress Tracking', icon: <TrendingUp /> },
   { href: '/chat-support', label: 'AI Chat Support', icon: <MessageSquareHeart /> },
+  { href: '/relapse-prevention', label: 'Relapse Prevention', icon: <ShieldCheck /> }, // New Relapse Prevention Item
 ];
 
 export function AppLayout({ children }: { children: ReactNode }) {
