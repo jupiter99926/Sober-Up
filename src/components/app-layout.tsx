@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquareHeart, TrendingUp, ShieldCheck, NotebookPen } from 'lucide-react'; // Added NotebookPen icon
+import { Home, MessageSquareHeart, TrendingUp, ShieldCheck, NotebookPen, Users } from 'lucide-react'; // Added Users icon
 
 import {
   Sidebar,
@@ -31,7 +31,8 @@ const navItems: NavItem[] = [
   { href: '/progress', label: 'Progress Tracking', icon: <TrendingUp /> },
   { href: '/chat-support', label: 'AI Chat Support', icon: <MessageSquareHeart /> },
   { href: '/relapse-prevention', label: 'Relapse Prevention', icon: <ShieldCheck /> },
-  { href: '/journaling', label: 'Journaling', icon: <NotebookPen /> }, // New Journaling Item
+  { href: '/journaling', label: 'Journaling', icon: <NotebookPen /> },
+  { href: '/community', label: 'Community Support', icon: <Users /> }, // New Community Support Item
 ];
 
 export function AppLayout({ children }: { children: ReactNode }) {
@@ -81,3 +82,4 @@ export function AppLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
+
