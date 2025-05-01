@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress'; // Import Progress component
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 
 // --- Types (Consider moving to src/types if complex) ---
 type Motivation = {
@@ -66,68 +67,78 @@ export default function Home() {
   const [streakDays, setStreakDays] = React.useState(0);
   const [pledgeStreak, setPledgeStreak] = React.useState(0); // Add state for pledge streak
   const [workbookItems, setWorkbookItems] = React.useState<WorkbookItem[]>(initialWorkbookItems);
+  const [isLoading, setIsLoading] = React.useState(true); // Added loading state
   const { toast } = useToast();
 
   // --- Load data from localStorage on mount ---
   React.useEffect(() => {
-    const storedPlan = localStorage.getItem(RECOVERY_PLAN_KEY);
-    if (storedPlan) setRecoveryPlan(storedPlan);
+    setIsLoading(true); // Start loading
+    try {
+      const storedPlan = localStorage.getItem(RECOVERY_PLAN_KEY);
+      if (storedPlan) setRecoveryPlan(storedPlan);
 
-    const storedDate = localStorage.getItem(SOBRIETY_START_DATE_KEY);
-    if (storedDate) {
-      const startDate = new Date(storedDate);
-      setSobrietyStartDate(startDate);
-      // Calculate initial sobriety streak
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - startDate.getTime());
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      setStreakDays(diffDays); // Simple streak based on start date for now
+      const storedDate = localStorage.getItem(SOBRIETY_START_DATE_KEY);
+      if (storedDate) {
+        const startDate = new Date(storedDate);
+        setSobrietyStartDate(startDate);
+        // Calculate initial sobriety streak
+        const today = new Date();
+        const diffTime = Math.abs(today.getTime() - startDate.getTime());
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        setStreakDays(diffDays); // Simple streak based on start date for now
+      }
+
+      const storedMotivations = localStorage.getItem(MOTIVATIONS_KEY);
+      if (storedMotivations) setMotivations(JSON.parse(storedMotivations));
+      else {
+          // Add default placeholder motivations if none exist
+           setMotivations([
+              { id: 'm1', type: 'image', content: 'https://picsum.photos/seed/family/150/150', "data-ai-hint": "family goal" },
+              { id: 'm2', type: 'text', content: 'I want my family to respect me.' },
+              { id: 'm3', type: 'text', content: 'No more hangovers! 💪' },
+              { id: 'm4', type: 'image', content: 'https://picsum.photos/seed/health/150/150', "data-ai-hint": "health fitness" },
+          ]);
+      }
+
+      const storedGoals = localStorage.getItem(GOALS_KEY);
+      if (storedGoals) setGoals(JSON.parse(storedGoals));
+
+      const storedPledgeDate = localStorage.getItem(DAILY_PLEDGE_DATE_KEY);
+      if (storedPledgeDate) {
+        const todayStr = new Date().toDateString();
+        setPledgedToday(storedPledgeDate === todayStr);
+      }
+
+      // Load pledge streak
+       const storedPledgeStreak = localStorage.getItem(PLEDGE_STREAK_KEY);
+       setPledgeStreak(storedPledgeStreak ? parseInt(storedPledgeStreak, 10) : 0);
+
+       // Load workbook items state
+       const storedWorkbookItems = localStorage.getItem(WORKBOOK_ITEMS_KEY);
+       if (storedWorkbookItems) {
+           try {
+              const parsedItems: WorkbookItem[] = JSON.parse(storedWorkbookItems);
+              // Map over initial items to keep structure and update completion status
+              setWorkbookItems(initialWorkbookItems.map(initialItem => {
+                  const savedItem = parsedItems.find(saved => saved.id === initialItem.id);
+                  return savedItem ? { ...initialItem, completed: savedItem.completed } : initialItem;
+              }));
+           } catch (e) {
+               console.error("Failed to parse workbook items:", e);
+               setWorkbookItems(initialWorkbookItems); // Fallback
+           }
+
+       } else {
+          setWorkbookItems(initialWorkbookItems);
+       }
+    } catch (error) {
+        console.error("Error loading data from localStorage:", error);
+        // Optionally set default states or show an error message
+    } finally {
+        // Simulate a slight delay to show loading skeleton if needed
+        // setTimeout(() => setIsLoading(false), 300);
+        setIsLoading(false); // Finish loading
     }
-
-    const storedMotivations = localStorage.getItem(MOTIVATIONS_KEY);
-    if (storedMotivations) setMotivations(JSON.parse(storedMotivations));
-    else {
-        // Add default placeholder motivations if none exist
-         setMotivations([
-            { id: 'm1', type: 'image', content: 'https://picsum.photos/seed/family/200/200' },
-            { id: 'm2', type: 'text', content: 'I want my family to respect me.' },
-            { id: 'm3', type: 'text', content: 'No more hangovers! 💪' },
-            { id: 'm4', type: 'image', content: 'https://picsum.photos/seed/health/200/200' },
-        ]);
-    }
-
-    const storedGoals = localStorage.getItem(GOALS_KEY);
-    if (storedGoals) setGoals(JSON.parse(storedGoals));
-
-    const storedPledgeDate = localStorage.getItem(DAILY_PLEDGE_DATE_KEY);
-    if (storedPledgeDate) {
-      const todayStr = new Date().toDateString();
-      setPledgedToday(storedPledgeDate === todayStr);
-    }
-
-    // Load pledge streak
-     const storedPledgeStreak = localStorage.getItem(PLEDGE_STREAK_KEY);
-     setPledgeStreak(storedPledgeStreak ? parseInt(storedPledgeStreak, 10) : 0);
-
-     // Load workbook items state
-     const storedWorkbookItems = localStorage.getItem(WORKBOOK_ITEMS_KEY);
-     if (storedWorkbookItems) {
-         try {
-            const parsedItems: WorkbookItem[] = JSON.parse(storedWorkbookItems);
-            // Map over initial items to keep structure and update completion status
-            setWorkbookItems(initialWorkbookItems.map(initialItem => {
-                const savedItem = parsedItems.find(saved => saved.id === initialItem.id);
-                return savedItem ? { ...initialItem, completed: savedItem.completed } : initialItem;
-            }));
-         } catch (e) {
-             console.error("Failed to parse workbook items:", e);
-             setWorkbookItems(initialWorkbookItems); // Fallback
-         }
-
-     } else {
-        setWorkbookItems(initialWorkbookItems);
-     }
-
 
   }, []);
 
@@ -208,7 +219,7 @@ export default function Home() {
         content = newMotivationText.trim();
     } else {
         // For now, just use a random placeholder image URL
-        content = `https://picsum.photos/seed/${Math.random()}/200/200`;
+        content = `https://picsum.photos/seed/${Math.random()}/150/150`;
         toast({ title: "Image Placeholder Added", description: "Image upload feature coming soon." });
     }
 
@@ -262,6 +273,35 @@ export default function Home() {
   const challengeProgress = Math.min((pledgeStreak / 7) * 100, 100); // Cap at 100%
   const daysLeftForChallenge = Math.max(0, 7 - pledgeStreak);
 
+  // --- Loading Skeletons ---
+  if (isLoading) {
+     return (
+        <main className="container mx-auto flex flex-col items-center p-6 md:p-12 space-y-8 animate-pulse">
+           <header className="w-full text-center">
+             <Skeleton className="h-10 w-3/4 mx-auto mb-2" />
+             <Skeleton className="h-6 w-1/2 mx-auto" />
+           </header>
+           {/* Skeleton for Get Started or Pledge/Habits */}
+            <Skeleton className="w-full max-w-lg h-40 rounded-lg mx-auto" />
+
+           {/* Skeleton for Grid */}
+           <div className="grid w-full max-w-6xl gap-8 lg:grid-cols-3 pt-8">
+             {/* Column 1 Skeletons */}
+             <div className="space-y-8 lg:col-span-1">
+                <Skeleton className="w-full h-60 rounded-lg" /> {/* Motivation */}
+                <Skeleton className="w-full h-48 rounded-lg" /> {/* Goals */}
+                <Skeleton className="w-full h-24 rounded-lg" /> {/* Streak */}
+             </div>
+             {/* Column 2 & 3 Skeleton */}
+              <div className="lg:col-span-2">
+                <Skeleton className="w-full h-96 rounded-lg" /> {/* Recovery Plan */}
+             </div>
+           </div>
+         </main>
+     );
+  }
+
+  // --- Actual Content ---
   return (
     <main className="container mx-auto flex flex-col items-center p-6 md:p-12 space-y-8">
       <header className="w-full text-center">
@@ -393,6 +433,7 @@ export default function Home() {
                                         alt="Motivation"
                                         width={150} height={150} // Specify dimensions
                                         className="rounded-lg object-cover w-full h-full transition-transform group-hover:scale-105" // Added hover scale
+                                        data-ai-hint={m["data-ai-hint"]} // Pass AI hint if exists
                                     />
                                 ) : (
                                     <div className={`flex items-center justify-center p-3 rounded-lg h-full text-center text-sm font-medium transition-colors ${ m.content.toLowerCase().includes('hangover') ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}`}> {/* Added hover bg */}
@@ -410,6 +451,12 @@ export default function Home() {
                                  </Button>
                             </div>
                         ))}
+                         {motivations.length < 4 && ( // Show add button if less than max motivations (e.g., 4)
+                             <Button variant="outline" className="flex flex-col items-center justify-center aspect-square h-full text-muted-foreground hover:bg-accent/50 transition-colors">
+                                <ImagePlus className="h-6 w-6 mb-1" />
+                                <span className="text-xs">Add Photo</span>
+                             </Button>
+                         )}
                     </div>
                      {/* Add Motivation Inputs */}
                      <div className="space-y-2 pt-4 border-t">
@@ -422,9 +469,10 @@ export default function Home() {
                              />
                              <Button size="sm" onClick={() => handleAddMotivation('text')} disabled={!newMotivationText.trim()}>Add Text</Button>
                          </div>
-                         <Button variant="outline" size="sm" className="w-full" onClick={() => handleAddMotivation('image')}>
+                         {/* Commenting out image button as it's integrated into the grid */}
+                         {/* <Button variant="outline" size="sm" className="w-full" onClick={() => handleAddMotivation('image')}>
                             <ImagePlus className="mr-2 h-4 w-4" /> Add Photo (Placeholder)
-                         </Button>
+                         </Button> */}
                      </div>
                 </CardContent>
             </Card>
@@ -503,24 +551,38 @@ export default function Home() {
                          {/* Use prose-sm for smaller text in cards, adjust max-w */}
                          <div className="prose prose-sm max-w-none text-secondary-foreground/90 whitespace-pre-wrap max-h-[70vh] overflow-y-auto p-2"> {/* Adjusted prose styles and padding */}
                             {/* Improved Markdown Rendering */}
-                            {recoveryPlan.split('\n').map((line, index) => {
+                            {recoveryPlan.split('\n').map((line, index, arr) => {
                                 const trimmedLine = line.trim();
-                                // Check for list items first
+                                const isListItem = trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ') || /^\d+\.\s/.test(trimmedLine);
+                                const nextLineIsListItem = index + 1 < arr.length && (arr[index+1].trim().startsWith('* ') || arr[index+1].trim().startsWith('- ') || /^\d+\.\s/.test(arr[index+1].trim()));
+                                const prevLineIsListItem = index > 0 && (arr[index-1].trim().startsWith('* ') || arr[index-1].trim().startsWith('- ') || /^\d+\.\s/.test(arr[index-1].trim()));
+
+                                // Render list items directly
                                 if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
-                                    return <li key={index} className="ml-4">{trimmedLine.substring(2)}</li>;
+                                     return <li key={index} className="ml-4 list-item list-disc">{trimmedLine.substring(2)}</li>;
                                 } else if (/^\d+\.\s/.test(trimmedLine)) {
-                                    return <li key={index} className="ml-4">{trimmedLine.substring(trimmedLine.indexOf('.') + 1).trim()}</li>;
-                                } else if (trimmedLine.startsWith('## ')) {
-                                    return <h2 key={index}>{trimmedLine.substring(3)}</h2>;
-                                } else if (trimmedLine.startsWith('# ')) {
-                                     return <h1 key={index}>{trimmedLine.substring(2)}</h1>;
-                                } else if (trimmedLine === '') {
-                                    // Render a break for empty lines between paragraphs
-                                    return index > 0 && recoveryPlan.split('\n')[index - 1].trim() !== '' ? <br key={index} /> : null;
-                                } else {
-                                    // Render as paragraph if it's not empty and not a heading/list item
-                                    return <p key={index}>{trimmedLine}</p>;
+                                     return <li key={index} className="ml-4 list-item list-decimal">{trimmedLine.substring(trimmedLine.indexOf('.') + 1).trim()}</li>;
                                 }
+
+                                // Render headings
+                                if (trimmedLine.startsWith('## ')) {
+                                    return <h2 key={index} className="mt-6 mb-3">{trimmedLine.substring(3)}</h2>; // Add margins for headings
+                                } else if (trimmedLine.startsWith('# ')) {
+                                     return <h1 key={index} className="mt-8 mb-4">{trimmedLine.substring(2)}</h1>; // Add margins for headings
+                                }
+
+                                // Render paragraphs, handling spacing around lists
+                                if (trimmedLine) {
+                                     // Add margin-bottom if the next line is NOT a list item
+                                     const mbClass = !isListItem && !nextLineIsListItem && trimmedLine ? 'mb-4' : '';
+                                     // Add margin-top if the previous line was NOT a list item
+                                     const mtClass = !isListItem && !prevLineIsListItem && trimmedLine ? 'mt-4' : '';
+                                     return <p key={index} className={`${mtClass} ${mbClass}`}>{trimmedLine}</p>;
+                                }
+
+                                // Return null for empty lines to avoid extra space, unless it's separating blocks
+                                return null;
+
                             }).filter(Boolean)} {/* Filter out nulls */}
                         </div>
                     </CardContent>
@@ -541,3 +603,5 @@ export default function Home() {
     </main>
   );
 }
+
+    

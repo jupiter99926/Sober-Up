@@ -17,20 +17,42 @@ const RECOVERY_PLAN_KEY = 'recoveryPlan'; // Use the same key as home page
 export default function ProgressPage() {
   const [sobrietyStartDate, setSobrietyStartDate] = React.useState<Date | null>(null);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
-  const [isLoadingDate, setIsLoadingDate] = React.useState(true);
+  const [isLoadingDate, setIsLoadingDate] = React.useState(true); // Start in loading state
 
    // Load start date from localStorage on initial mount
    React.useEffect(() => {
-    setIsLoadingDate(true);
-    // Simulate loading delay for visual feedback if needed
-    // await new Promise(resolve => setTimeout(resolve, 300));
+    // No need to explicitly set isLoadingDate to true here, it starts as true
+
+    // Directly check localStorage
     const storedDate = localStorage.getItem(SOBRIETY_START_DATE_KEY);
     if (storedDate) {
-      setSobrietyStartDate(new Date(storedDate));
+      try {
+          const parsedDate = new Date(storedDate);
+          // Basic validation if the date is valid
+          if (!isNaN(parsedDate.getTime())) {
+              setSobrietyStartDate(parsedDate);
+          } else {
+               console.error("Invalid date found in localStorage:", storedDate);
+               localStorage.removeItem(SOBRIETY_START_DATE_KEY); // Clear invalid date
+          }
+      } catch (error) {
+          console.error("Error parsing date from localStorage:", error);
+          localStorage.removeItem(SOBRIETY_START_DATE_KEY); // Clear potentially corrupt data
+      }
+
     } else {
         console.log("No sobriety start date found in localStorage.");
     }
-    setIsLoadingDate(false); // Set loading to false after checking localStorage
+
+    // Finish loading after checking (and potential parsing)
+    // Use setTimeout to ensure skeleton is visible for a brief moment even if data loads instantly
+    const timer = setTimeout(() => {
+       setIsLoadingDate(false);
+    }, 100); // Small delay (e.g., 100ms)
+
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+
+
   }, []);
 
   // Handler for plan generation (sets start date and saves plan - similar to home)
@@ -40,6 +62,7 @@ export default function ProgressPage() {
      setSobrietyStartDate(startDate);
      localStorage.setItem(SOBRIETY_START_DATE_KEY, startDate.toISOString()); // Save to localStorage
      localStorage.setItem(RECOVERY_PLAN_KEY, plan); // Save plan too
+     setIsLoadingDate(false); // Ensure loading is false after setting date
      setIsFormOpen(false); // Close dialog
   };
 
@@ -59,13 +82,23 @@ export default function ProgressPage() {
        <div className="grid w-full max-w-6xl gap-8">
          {isLoadingDate ? (
             // Show skeleton loaders while checking for the start date
-             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Skeleton className="h-40 w-full rounded-lg" /> {/* Added rounded-lg */}
-                <Skeleton className="h-40 w-full rounded-lg" />
-                <Skeleton className="h-40 w-full rounded-lg" />
-                <Skeleton className="h-40 w-full md:col-span-2 lg:col-span-1 rounded-lg" />
-                <Skeleton className="h-40 w-full rounded-lg" />
-                <Skeleton className="h-40 w-full rounded-lg" />
+             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:col-span-3 animate-pulse">
+                {/* Simulate ProgressTracker layout */}
+                 {/* Column 1 */}
+                 <div className="space-y-6 lg:col-span-1">
+                     <Skeleton className="h-28 w-full rounded-lg" /> {/* Sobriety Clock */}
+                     <Skeleton className="h-36 w-full rounded-lg" /> {/* Next Milestone */}
+                 </div>
+                  {/* Column 2 */}
+                 <div className="space-y-6 lg:col-span-1">
+                     <Skeleton className="h-24 w-full rounded-lg" /> {/* Money Saved */}
+                     <Skeleton className="h-32 w-full rounded-lg" /> {/* Earned Milestones */}
+                 </div>
+                  {/* Column 3 */}
+                  <div className="space-y-6 lg:col-span-1">
+                     <Skeleton className="h-48 w-full rounded-lg" /> {/* Health Benefits */}
+                     <Skeleton className="h-32 w-full rounded-lg" /> {/* Substance Tracking */}
+                 </div>
             </div>
 
          ) : sobrietyStartDate ? (
@@ -94,8 +127,8 @@ export default function ProgressPage() {
         </div>
 
 
-        {/* Dialog for Recovery Plan Form (Conditionally rendered if no start date) */}
-        {!sobrietyStartDate && (
+        {/* Dialog for Recovery Plan Form (Conditionally rendered if no start date or during loading) */}
+        {!isLoadingDate && !sobrietyStartDate && (
             <RecoveryPlanDialog
                 isOpen={isFormOpen}
                 onOpenChange={setIsFormOpen}
@@ -105,3 +138,5 @@ export default function ProgressPage() {
     </main>
   );
 }
+
+    
