@@ -1,7 +1,8 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-// import { getAnalytics } from "firebase/analytics"; // Uncomment if you need analytics
+import { getAnalytics, isSupported } from "firebase/analytics"; // Import isSupported
 
+// Use environment variables defined in .env or deployment environment
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,8 +14,34 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-// const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null; // Initialize Analytics only on client
+let app;
+if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+} else {
+    app = getApp();
+}
 
-export { app, auth };
+const auth = getAuth(app);
+
+// Initialize Analytics conditionally only on the client-side and if supported
+let analytics = null;
+if (typeof window !== 'undefined') {
+    isSupported().then((supported) => {
+        if (supported) {
+            analytics = getAnalytics(app);
+            console.log("Firebase Analytics initialized.");
+        } else {
+            console.log("Firebase Analytics is not supported in this environment.");
+        }
+    });
+}
+
+
+// Log config during build/server start for verification (optional, remove in production)
+// console.log("Firebase Config Loaded:", {
+//     apiKey: firebaseConfig.apiKey ? 'Loaded' : 'MISSING',
+//     authDomain: firebaseConfig.authDomain,
+//     projectId: firebaseConfig.projectId,
+// });
+
+export { app, auth, analytics }; // Export analytics
